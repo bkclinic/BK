@@ -1,0 +1,2984 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BK CLINIC - Расписание</title>
+  <link rel="icon" type="image/png" href="/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #0d9488;
+      --primary-hover: #0f766e;
+      --primary-light: #ccfbf1;
+      --surface: #ffffff;
+      --surface-2: #f8fafc;
+      --surface-3: #f1f5f9;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-light: #94a3b8;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+      --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+      --radius: 10px;
+      --radius-sm: 8px;
+      --radius-lg: 14px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: var(--surface-2);
+      color: var(--text);
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Header — премиум */
+    .header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 64px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 0 24px;
+      z-index: 1000;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-text {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text);
+      letter-spacing: -0.02em;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin-left: 30px;
+    }
+
+    .hamburger {
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 5px;
+      border: none;
+      background: var(--surface-3);
+      padding: 0;
+      border-radius: var(--radius-sm);
+      transition: background 0.2s;
+    }
+
+    .hamburger:hover {
+      background: var(--border);
+    }
+
+    .hamburger span {
+      width: 18px;
+      height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      margin: 0 auto;
+    }
+
+    .header-dropdown {
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .header-icons {
+      margin-left: auto;
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .header-icon {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      opacity: 0.7;
+    }
+
+    /* Sidebar — премиум */
+    .sidebar {
+      width: 260px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 84px 0 24px 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      transition: width 0.25s ease;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .sidebar.collapsed {
+      width: 72px;
+    }
+
+    .sidebar.collapsed .menu-item span,
+    .sidebar.collapsed .menu-arrow {
+      display: none;
+    }
+
+    .sidebar.collapsed .menu-item {
+      padding: 14px 0;
+      justify-content: center;
+      border-radius: 0;
+    }
+
+    .sidebar.collapsed .menu-icon {
+      margin-right: 0;
+    }
+
+    .menu-item {
+      display: flex;
+      align-items: center;
+      padding: 12px 20px;
+      margin: 2px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      border-radius: var(--radius-sm);
+      color: var(--text-muted);
+    }
+
+    .menu-item:hover {
+      background: var(--surface-3);
+      color: var(--text);
+    }
+
+    .menu-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .menu-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 3px;
+      height: 24px;
+      background: var(--primary);
+      border-radius: 0 3px 3px 0;
+    }
+
+    .menu-icon {
+      width: 22px;
+      height: 22px;
+      margin-right: 12px;
+      opacity: 0.85;
+    }
+
+    .menu-arrow {
+      margin-left: auto;
+      width: 16px;
+      height: 16px;
+      opacity: 0.5;
+    }
+
+    /* Main Content — премиум */
+    .main-content {
+      margin-left: 260px;
+      margin-top: 64px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--surface-2);
+      transition: margin-left 0.25s ease;
+    }
+
+    .main-content.sidebar-collapsed {
+      margin-left: 72px;
+    }
+
+    .main-view {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .main-content.view-reports #scheduleView {
+      display: none;
+    }
+
+    .main-content.view-reports #reportsView {
+      display: flex;
+    }
+
+    #reportsView {
+      display: none;
+      flex-direction: column;
+      padding: 20px;
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+
+    .reports-header {
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .reports-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+
+    .reports-print-btn {
+      width: 40px;
+      height: 40px;
+      padding: 0;
+      border: none;
+      background: var(--surface-3);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+      flex-shrink: 0;
+    }
+    .reports-print-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .reports-layout {
+      display: flex;
+      gap: 20px;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .reports-calendar-wrap {
+      flex: 0 0 280px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 20px;
+      height: fit-content;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .reports-calendar-wrap .calendar-header {
+      padding: 0;
+      margin-bottom: 12px;
+    }
+
+    .reports-calendar-wrap .calendar-month {
+      font-size: 15px;
+    }
+
+    .reports-calendar-wrap .calendar-days {
+      min-height: 200px;
+    }
+
+    .reports-calendar-wrap .calendar-day {
+      cursor: pointer;
+    }
+
+    .reports-date-label {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .reports-list-wrap {
+      flex: 1;
+      overflow-y: auto;
+      min-width: 0;
+    }
+
+    .reports-summary {
+      margin-bottom: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .reports-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+
+    .report-card {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .report-card:hover {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .report-card-name {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .report-card-spec {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 14px;
+    }
+
+    .report-card-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      font-size: 14px;
+      border-bottom: 1px solid var(--border-light);
+    }
+
+    .report-card-row:last-child {
+      border-bottom: none;
+    }
+
+    .report-card-label {
+      color: var(--text-muted);
+    }
+
+    .report-card-value {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* Статистика — месячная/годовая диаграмма */
+    .stats-section {
+      margin-top: 24px;
+      background: var(--surface);
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .stats-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .stats-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .stats-toggle {
+      display: flex;
+      background: var(--surface-3);
+      border-radius: var(--radius-sm);
+      padding: 4px;
+    }
+    .stats-toggle-btn {
+      padding: 8px 16px;
+      border: none;
+      background: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .stats-toggle-btn:hover {
+      color: var(--text);
+    }
+    .stats-toggle-btn.active {
+      background: var(--surface);
+      color: var(--primary);
+      box-shadow: var(--shadow-sm);
+    }
+    .stats-charts {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .stats-chart {
+      background: var(--surface);
+      border-radius: var(--radius);
+      padding: 20px;
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-sm);
+    }
+    .stats-chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stats-chart-area {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      height: 180px;
+      padding: 0 0 0 44px;
+      position: relative;
+    }
+    .stats-chart-y-axis {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 32px;
+      width: 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-right: 1px solid var(--border);
+      padding-right: 8px;
+      text-align: right;
+    }
+    .stats-chart-bars {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      flex: 1;
+      min-height: 140px;
+      padding-top: 0;
+    }
+    .stats-bar-wrap {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 0;
+      height: 140px;
+    }
+    .stats-bar-spacer {
+      flex: 1;
+      min-height: 0;
+    }
+    .stats-bar {
+      width: 100%;
+      max-width: 48px;
+      margin: 0 auto;
+      min-height: 4px;
+      border-radius: 6px 6px 0 0;
+      transform-origin: bottom;
+      animation: statsBarRise 0.5s ease-out forwards;
+    }
+    @keyframes statsBarRise {
+      from { transform: scaleY(0); opacity: 0; }
+      to { transform: scaleY(1); opacity: 1; }
+    }
+    .stats-bar-patients { background: linear-gradient(180deg, #0d9488 0%, #0f766e 100%); }
+    .stats-bar-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 8px;
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 100%;
+    }
+    .stats-bar-value {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text);
+      margin-top: 2px;
+    }
+
+    /* Пациенты — список и профиль */
+    .main-content.view-patients #scheduleView {
+      display: none;
+    }
+
+    .main-content.view-patients #reportsView {
+      display: none;
+    }
+
+    .main-content.view-patients #patientsView {
+      display: flex;
+    }
+
+    #patientsView {
+      display: none;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+      padding: 20px;
+    }
+
+    .patients-search-wrap {
+      margin-bottom: 16px;
+    }
+
+    .patients-search {
+      width: 100%;
+      max-width: 420px;
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      box-sizing: border-box;
+      background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .patients-search:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+    }
+
+    .patients-search::placeholder {
+      color: var(--text-light);
+    }
+
+    .patients-layout {
+      display: flex;
+      flex: 1;
+      gap: 20px;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .patients-list-wrap {
+      flex: 0 0 340px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .patients-list-item {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-light);
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .patients-list-item:hover {
+      background: var(--surface-3);
+    }
+
+    .patients-list-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+    }
+
+    .patients-list-item:last-child {
+      border-bottom: none;
+    }
+
+    .patients-list-item-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .patients-list-item-phone {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .patients-profile-wrap {
+      flex: 1;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .patients-profile-empty {
+      color: var(--text-light);
+      font-size: 14px;
+      text-align: center;
+      padding: 48px 24px;
+    }
+
+    .patients-profile-header {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .patients-profile-title {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--text);
+      margin: 0 0 6px 0;
+    }
+
+    .patients-profile-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    .patients-profile-history {
+      font-size: 13px;
+      font-weight: 600;
+      color: #555;
+      margin-bottom: 12px;
+    }
+
+    .patient-history-item {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 10px;
+      font-size: 13px;
+      background: var(--surface-2);
+    }
+
+    .patient-history-item .date,
+    .patient-history-item .time,
+    .patient-history-item .doctor,
+    .patient-history-item .service {
+      margin-bottom: 4px;
+    }
+
+    .patient-history-item .service {
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .content-wrapper {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* Tabs — премиум */
+    .tabs {
+      display: flex;
+      gap: 0;
+      padding: 20px 24px 0 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 14px 24px;
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      font-size: 14px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: color 0.2s;
+    }
+
+    .tab:hover {
+      color: var(--text);
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 600;
+    }
+
+    .tab-icon {
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Left Panel — премиум */
+    .left-panel {
+      width: 360px;
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .calendar-widget {
+      padding: 24px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+    }
+
+    .calendar-month {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: 10px;
+    }
+
+    .calendar-nav-btn {
+      width: 32px;
+      height: 32px;
+      border: none;
+      background: var(--surface-3);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: var(--text);
+      transition: background 0.2s;
+    }
+
+    .calendar-nav-btn:hover {
+      background: var(--border);
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .calendar-weekday {
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+      padding: 4px;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.2s;
+    }
+
+    .calendar-day:hover {
+      background: var(--surface-3);
+    }
+
+    .calendar-day.selected {
+      background: var(--primary);
+      color: white;
+      font-weight: 600;
+    }
+
+    .calendar-day.other-month {
+      color: var(--text-light);
+    }
+
+    .calendar-day.today {
+      font-weight: bold;
+      border: 2px solid var(--primary);
+    }
+
+    .calendar-today {
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+      cursor: pointer;
+      padding: 8px 0;
+      text-align: center;
+      border-radius: var(--radius-sm);
+      transition: background 0.2s;
+    }
+
+    .calendar-today:hover {
+      background: var(--surface-3);
+    }
+
+    .daily-appointments {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .date-header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+      border-radius: var(--radius-sm);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+    }
+
+    .date-text {
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    .date-icons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .date-icon {
+      width: 20px;
+      height: 20px;
+      opacity: 0.9;
+    }
+
+    .appointments-filter {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .filter-dropdown {
+      flex: 1;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: 14px;
+    }
+
+    .add-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--primary);
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow);
+      transition: background 0.2s, transform 0.15s;
+    }
+
+    .add-btn:hover {
+      background: var(--primary-hover);
+      transform: scale(1.05);
+    }
+
+    .appointment-item {
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      background: var(--surface);
+      font-size: 13px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .appointment-item .patient {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .appointment-item .doctor {
+      color: var(--text-muted);
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .appointment-item .time {
+      color: var(--text-light);
+      font-size: 11px;
+    }
+
+    .appointment-edit {
+      float: right;
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+      margin-top: 2px;
+    }
+
+    .appointment-edit:hover {
+      opacity: 1;
+    }
+
+    .status-icon {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      margin-right: 6px;
+      vertical-align: middle;
+    }
+
+    /* Right Panel - Schedule Grid — премиум */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .schedule-header {
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .schedule-date {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .schedule-grid {
+      flex: 1;
+      overflow: auto;
+      padding: 20px;
+    }
+
+    .schedule-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 800px;
+    }
+
+    .schedule-table th {
+      background: var(--surface-2);
+      padding: 16px 18px;
+      text-align: left;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      min-width: 120px;
+    }
+
+    .schedule-table th .doctor-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .schedule-table th .doctor-spec {
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .schedule-table td {
+      padding: 14px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+      position: relative;
+      min-width: 120px;
+    }
+
+    .time-column {
+      width: 52px;
+      min-width: 52px;
+      max-width: 52px;
+      font-size: 11px;
+      color: var(--text-muted);
+      text-align: center;
+      background: var(--surface-2);
+      padding: 8px 4px;
+    }
+
+    .appointment-block {
+      position: absolute;
+      left: 4px;
+      right: 4px;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: white;
+      cursor: move;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      box-shadow: var(--shadow);
+      transition: transform 0.15s, box-shadow 0.2s;
+      user-select: none;
+    }
+
+    .appointment-block:hover {
+      transform: translateY(-1px);
+      box-shadow: var(--shadow-lg);
+    }
+
+    .appointment-block.dragging {
+      opacity: 0.5;
+      cursor: grabbing;
+    }
+
+    .schedule-table td.drag-over {
+      background: var(--primary-light);
+      border: 2px dashed var(--primary);
+    }
+    .schedule-table td.schedule-cell-selected {
+      background: var(--primary-light);
+      border: 2px solid var(--primary);
+    }
+
+    .appointment-block.light-blue {
+      background: linear-gradient(135deg, #0d9488 0%, #14b8a6 100%);
+    }
+
+    .appointment-block.light-green {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    }
+
+    .appointment-block.yellow {
+      background: linear-gradient(135deg, #d97706 0%, #f59e0b 100%);
+      color: #fff;
+    }
+
+    .appointment-block-content {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .appointment-icon {
+      width: 14px;
+      height: 14px;
+      flex-shrink: 0;
+    }
+
+    .appointment-paid-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      opacity: 0.95;
+    }
+
+    .appointment-name {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .appointment-extra {
+      font-size: 11px;
+      margin-left: 4px;
+    }
+
+    .appointment-g {
+      position: absolute;
+      right: 4px;
+      top: 4px;
+      width: 16px;
+      height: 16px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: bold;
+    }
+
+    /* Sample data styling */
+    .empty-cell {
+      height: 30px;
+      cursor: pointer;
+    }
+
+    .empty-cell:hover {
+      background: var(--primary-light);
+    }
+
+    /* Modal popup — запись пациента */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-popup {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+      width: 90%;
+      max-width: 480px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid var(--border);
+      overflow: hidden;
+    }
+
+    .modal-popup-wide {
+      max-width: 520px;
+    }
+
+    .modal-field-row {
+      margin-bottom: 12px;
+    }
+
+    .modal-checkbox-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .modal-checkbox-label input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      cursor: pointer;
+    }
+
+    .modal-checkbox-label input[type="checkbox"]:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .modal-checkbox-label:has(input[type="checkbox"]:disabled) {
+      cursor: not-allowed;
+      opacity: 0.7;
+    }
+
+    /* Undo notification */
+    .undo-notification {
+      position: fixed;
+      right: 20px;
+      bottom: 20px;
+      left: auto;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      align-items: center;
+      gap: 12px;
+      z-index: 2000;
+      min-width: 280px;
+    }
+
+    .undo-notification.show {
+      display: flex;
+      animation: slideInUp 0.3s ease;
+    }
+
+    @keyframes slideInUp {
+      from {
+        transform: translateY(100%);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .undo-notification-message {
+      flex: 1;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .undo-notification-btn {
+      padding: 8px 16px;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .undo-notification-btn:hover {
+      background: var(--primary-hover);
+    }
+
+    .undo-notification-timer {
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-muted);
+      min-width: 24px;
+      text-align: center;
+    }
+
+    .modal-section {
+      margin-top: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .modal-section-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      padding: 0;
+      border: none;
+      background: none;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      color: #555;
+      text-align: left;
+    }
+
+    .modal-section-toggle:hover {
+      color: var(--primary);
+    }
+
+    .modal-section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: inherit;
+    }
+
+    .modal-section-arrow {
+      font-size: 10px;
+      transition: transform 0.2s;
+      color: #888;
+    }
+
+    .modal-section.collapsed .modal-section-arrow {
+      transform: rotate(-90deg);
+    }
+
+    .modal-section-body {
+      margin-top: 12px;
+    }
+
+    .modal-section.collapsed .modal-section-body {
+      display: none;
+    }
+
+    .modal-footer-edit {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .modal-footer-right {
+      display: flex;
+      gap: 12px;
+    }
+
+    .modal-btn-danger {
+      background: #dc2626;
+      color: #fff;
+    }
+
+    .modal-btn-danger:hover {
+      background: #b91c1c;
+    }
+
+    .modal-header {
+      padding: 22px 24px;
+      border-bottom: 1px solid var(--border);
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      flex-shrink: 0;
+    }
+
+    .modal-body {
+      padding: 24px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+
+    .modal-field {
+      margin-bottom: 16px;
+    }
+
+    .modal-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .modal-field input,
+    .modal-field select,
+    .modal-field textarea {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      box-sizing: border-box;
+      background: var(--surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .modal-field input:focus,
+    .modal-field select:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+    }
+
+    .modal-field input.error {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.12);
+    }
+
+    .modal-field-error {
+      color: #dc2626;
+      font-size: 12px;
+      margin-top: 4px;
+      display: none;
+    }
+
+    .modal-field-error.show {
+      display: block;
+    }
+
+    .modal-footer {
+      padding: 18px 24px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+      flex-shrink: 0;
+    }
+
+    .modal-btn {
+      padding: 10px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+    }
+
+    .modal-btn-cancel {
+      background: var(--surface-3);
+      color: var(--text-muted);
+    }
+
+    .modal-btn-cancel:hover {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .modal-btn-save {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .modal-btn-save:hover {
+      background: var(--primary-hover);
+    }
+
+    @media (max-width: 1200px) {
+      .sidebar {
+        width: 200px;
+      }
+      .main-content {
+        margin-left: 200px;
+      }
+      .left-panel {
+        width: 300px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <button type="button" class="hamburger" id="sidebarToggle" aria-label="Меню">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+    <div class="header-logo">
+      <div class="logo-text">BK CLINIC</div>
+    </div>
+    <div class="header-icons">
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
+    <div class="menu-item active" data-view="schedule" id="menuSchedule">
+      <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+      </svg>
+      <span>Расписание</span>
+      <svg class="menu-arrow" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+      </svg>
+    </div>
+    <div class="menu-item" data-view="patients" id="menuPatients">
+      <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
+      </svg>
+      <span>Пациенты</span>
+      <svg class="menu-arrow" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+      </svg>
+    </div>
+    <div class="menu-item" data-view="reports" id="menuReports">
+      <svg class="menu-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+      </svg>
+      <span>Отчеты</span>
+      <svg class="menu-arrow" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="main-content" id="mainContent">
+    <div id="scheduleView" class="main-view">
+    <!-- Tabs -->
+    <div class="tabs">
+      <div class="tab active">
+        <svg class="tab-icon" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/>
+        </svg>
+        Расписание
+      </div>
+    </div>
+
+    <div class="content-wrapper">
+      <!-- Left Panel -->
+      <div class="left-panel">
+        <!-- Calendar Widget -->
+        <div class="calendar-widget">
+          <div class="calendar-header">
+            <div class="calendar-month" id="calendarMonth">Июль 2022</div>
+            <div class="calendar-nav">
+              <button class="calendar-nav-btn" id="calendarPrev">‹</button>
+              <button class="calendar-nav-btn" id="calendarNext">›</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays">
+            <div class="calendar-weekday">Пн</div>
+            <div class="calendar-weekday">Вт</div>
+            <div class="calendar-weekday">Ср</div>
+            <div class="calendar-weekday">Чт</div>
+            <div class="calendar-weekday">Пт</div>
+            <div class="calendar-weekday">Сб</div>
+            <div class="calendar-weekday">Вс</div>
+          </div>
+          <div class="calendar-days" id="calendarDays"></div>
+          <div class="calendar-today" id="calendarTodayBtn">Сегодня</div>
+        </div>
+
+        <!-- Daily Appointments -->
+        <div class="daily-appointments">
+          <div class="date-header">
+            <div class="date-text" id="dateText">29 июль пятница</div>
+          </div>
+
+          <div class="appointments-filter">
+          </div>
+
+          <div id="appointmentsList">
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel - Schedule Grid -->
+      <div class="right-panel">
+        <div class="schedule-header">
+          <div class="schedule-date" id="scheduleDate">29.07.2022</div>
+        </div>
+        <div class="schedule-grid">
+          <table class="schedule-table">
+            <thead>
+              <tr>
+                <th class="time-column">Время</th>
+                <th><div class="doctor-name">Азат</div></th>
+                <th><div class="doctor-name">Естай</div></th>
+                <th><div class="doctor-name">Фатхулло</div></th>
+                <th><div class="doctor-name">Камран</div></th>
+                <th><div class="doctor-name">Карим</div></th>
+                <th><div class="doctor-name">Мерей</div></th>
+                <th><div class="doctor-name">Заңғар</div></th>
+                <th><div class="doctor-name">Адиль</div></th>
+                <th><div class="doctor-name">Ақтөре</div></th>
+                <th><div class="doctor-name">Нұрбақыт</div></th>
+              </tr>
+            </thead>
+            <tbody id="scheduleBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+    </div>
+
+    <!-- Отчёты — дневной отчёт и список врачей -->
+    <div id="reportsView" class="main-view reports-view">
+      <div class="reports-header">
+        <h2 class="reports-title">Отчеты</h2>
+        <button type="button" class="reports-print-btn" id="reportsPrintBtn" title="Печать отчёта за сегодня">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19 8H5c-1.66 0-3 1.34-3 3v6h4v4h12v-4h4v-6c0-1.66-1.34-3-3-3zm-3 11H8v-5h8v5zm3-7c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1zm-1-9H6v4h12V3z"/>
+          </svg>
+        </button>
+      </div>
+      <div class="reports-layout">
+        <div class="reports-calendar-wrap">
+          <div class="reports-date-label" id="reportsDateLabel">Дата отчёта</div>
+          <div class="calendar-header">
+            <div class="calendar-month" id="reportsCalendarMonth">Июль 2022</div>
+            <div class="calendar-nav">
+              <button type="button" class="calendar-nav-btn" id="reportsCalendarPrev">‹</button>
+              <button type="button" class="calendar-nav-btn" id="reportsCalendarNext">›</button>
+            </div>
+          </div>
+          <div class="calendar-weekdays">
+            <div class="calendar-weekday">Пн</div>
+            <div class="calendar-weekday">Вт</div>
+            <div class="calendar-weekday">Ср</div>
+            <div class="calendar-weekday">Чт</div>
+            <div class="calendar-weekday">Пт</div>
+            <div class="calendar-weekday">Сб</div>
+            <div class="calendar-weekday">Вс</div>
+          </div>
+          <div class="calendar-days" id="reportsCalendarDays"></div>
+          <div class="calendar-today" id="reportsCalendarTodayBtn">Сегодня</div>
+        </div>
+        <div class="reports-list-wrap">
+          <div id="reportsSummary" class="reports-summary"></div>
+          <div class="reports-list" id="reportsList"></div>
+        </div>
+      </div>
+      <div class="stats-section">
+        <div class="stats-header">
+          <span class="stats-title">Месячная статистика</span>
+          <div class="stats-toggle">
+            <button type="button" class="stats-toggle-btn active" id="statsToggleMonthly">Месячная</button>
+            <button type="button" class="stats-toggle-btn" id="statsToggleYearly">Годовая</button>
+          </div>
+        </div>
+        <div class="stats-charts">
+          <div class="stats-chart">
+            <div class="stats-chart-title">Количество пациентов</div>
+            <div class="stats-chart-area">
+              <div class="stats-chart-y-axis" id="statsPatientsYAxis"></div>
+              <div class="stats-chart-bars" id="statsPatientsBars"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Пациенты — список и профиль -->
+    <div id="patientsView" class="main-view">
+      <div class="patients-search-wrap">
+        <input type="text" class="patients-search" id="patientsSearch" placeholder="Поиск по имени или номеру телефона...">
+      </div>
+      <div class="patients-layout">
+        <div class="patients-list-wrap">
+          <div id="patientsList"></div>
+        </div>
+        <div class="patients-profile-wrap">
+          <div id="patientProfileContent">
+            <div class="patients-profile-empty">Выберите пациента из списка</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Попап: запись пациента -->
+  <div class="modal-overlay" id="patientModal">
+    <div class="modal-popup">
+      <div class="modal-header" id="patientModalTitle">Запись пациента</div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label>Имя</label>
+          <input type="text" id="patientName" placeholder="Имя пациента">
+        </div>
+        <div class="modal-field">
+          <label>Номер телефона</label>
+          <input type="tel" id="patientPhone" placeholder="Номер телефона">
+          <div class="modal-field-error" id="patientPhoneError">Введите номер телефона</div>
+        </div>
+        <div class="modal-field">
+          <label>Услуга</label>
+          <input type="text" id="patientService" placeholder="Услуга">
+        </div>
+        <div class="modal-field">
+          <label>Цена</label>
+          <input type="text" id="patientPrice" placeholder="Цена">
+        </div>
+        <div class="modal-field modal-field-row">
+          <label class="modal-checkbox-label">
+            <input type="checkbox" id="patientPaid">
+            <span>Оплата произведена</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="modal-btn modal-btn-cancel" id="patientModalCancel">Отмена</button>
+        <button type="button" class="modal-btn modal-btn-save" id="patientModalSave">Сохранить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Попап: редактирование записи -->
+  <div class="modal-overlay" id="editAppointmentModal">
+    <div class="modal-popup modal-popup-wide">
+      <div class="modal-header">Редактирование записи</div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label>Имя</label>
+          <input type="text" id="editPatientName" placeholder="Имя пациента">
+        </div>
+        <div class="modal-field">
+          <label>Номер телефона</label>
+          <input type="tel" id="editPatientPhone" placeholder="+7 ...">
+        </div>
+        <div class="modal-field">
+          <label>Услуга</label>
+          <input type="text" id="editPatientService" placeholder="Услуга">
+        </div>
+        <div class="modal-field">
+          <label>Цена</label>
+          <input type="text" id="editPatientPrice" placeholder="Цена">
+        </div>
+        <div class="modal-field modal-field-row">
+          <label class="modal-checkbox-label">
+            <input type="checkbox" id="editPaid">
+            <span>Оплата произведена</span>
+          </label>
+        </div>
+      </div>
+      <div class="modal-footer modal-footer-edit">
+        <button type="button" class="modal-btn modal-btn-danger" id="editAppointmentModalDelete">Удалить запись</button>
+        <div class="modal-footer-right">
+          <button type="button" class="modal-btn modal-btn-cancel" id="editAppointmentModalCancel">Отмена</button>
+          <button type="button" class="modal-btn modal-btn-save" id="editAppointmentModalSave">Сохранить</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Undo notification -->
+  <div class="undo-notification" id="undoNotification">
+    <div class="undo-notification-message" id="undoMessage">Запись удалена</div>
+    <span class="undo-notification-timer" id="undoTimer">10</span>
+    <button type="button" class="undo-notification-btn" id="undoButton">Вернуть</button>
+  </div>
+
+  <script>
+    // Real calendar — current date and navigation
+    const MONTH_NAMES = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
+    const WEEKDAY_NAMES = ['понедельник', 'вторник', 'среда', 'четверг', 'пятница', 'суббота', 'воскресенье'];
+
+    let DOCTORS = [];
+    let viewYear, viewMonth;
+    let selectedDate;
+    let reportSelectedDate;
+    let reportViewYear, reportViewMonth;
+    let appointments = [];
+    let modalTime = '';
+    let modalTimes = [];
+    let modalDoctor = 0;
+    let scheduleTimes = [];
+    let lastClickedCell = null;
+
+    // API helper functions
+    async function apiGet(url) {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function apiPost(url, data) {
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function apiPut(url, data) {
+      const res = await fetch(url, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function apiDelete(url) {
+      const res = await fetch(url, { method: 'DELETE' });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return await res.json();
+    }
+
+    async function loadDoctors() {
+      try {
+        const doctors = await apiGet('/api/doctors');
+        DOCTORS = doctors.map(d => ({ name: d.name, spec: d.specialization || '' }));
+        updateDoctorsInUI();
+      } catch (err) {
+        console.error('Failed to load doctors:', err);
+        // Fallback to default doctors
+        DOCTORS = [
+          { name: 'Латип Азат', spec: 'Хирург' },
+          { name: 'Есіркепұлы Естай', spec: 'Терапевт' },
+          { name: 'Турсынбаев Фатхулло', spec: 'Терапевт' },
+          { name: 'Халидов Камран', spec: 'Терапевт' },
+          { name: 'Мамедов Карим', spec: 'Терапевт' },
+          { name: 'Рыскул Мерей', spec: 'Терапевт' },
+          { name: 'Байбатчаев Заңғар', spec: 'Ортодонт' },
+          { name: 'Тлен Адиль', spec: 'Ортопед' },
+          { name: 'Адамбек Ақтөре', spec: 'Практикант' },
+          { name: 'Темірбек Нұрбақыт', spec: 'Практикант' }
+        ];
+        updateDoctorsInUI();
+      }
+    }
+
+    function getFirstName(fullName) {
+      if (!fullName) return '';
+      if (fullName.indexOf('Адамбек') !== -1 && fullName.indexOf('Ақтөре') !== -1) return 'Ақтөре';
+      const parts = fullName.trim().split(/\s+/);
+      return parts[parts.length - 1]; // Return last part (first name)
+    }
+
+    function updateDoctorsInUI() {
+      const thead = document.querySelector('.schedule-table thead tr');
+      if (thead) {
+        const timeColLeft = thead.querySelector('.time-column');
+        thead.innerHTML = '';
+        if (timeColLeft) thead.appendChild(timeColLeft.cloneNode(true));
+        DOCTORS.forEach(doc => {
+          const th = document.createElement('th');
+          const firstName = getFirstName(doc.name);
+          th.innerHTML = '<div class="doctor-name">' + firstName + '</div>';
+          thead.appendChild(th);
+        });
+        const timeColRight = document.createElement('th');
+        timeColRight.className = 'time-column';
+        timeColRight.textContent = 'Время';
+        thead.appendChild(timeColRight);
+      }
+    }
+
+    async function loadAppointments(dateStr) {
+      try {
+        const url = dateStr ? `/api/appointments?date=${dateStr}` : '/api/appointments';
+        const data = await apiGet(url);
+        // Normalize IDs with fallback
+        appointments = (data || []).map(a => ({
+          ...a,
+          id: a.id ?? a._id ?? a.appointmentId ?? a.ID
+        }));
+        return appointments;
+      } catch (err) {
+        console.error('Failed to load appointments:', err);
+        appointments = [];
+        return [];
+      }
+    }
+
+    async function loadAppointmentsInRange(fromDateStr, toDateStr) {
+      try {
+        const url = `/api/appointments?from_date=${fromDateStr}&to_date=${toDateStr}`;
+        const data = await apiGet(url);
+        return (data || []).map(a => ({
+          ...a,
+          id: a.id ?? a._id ?? a.appointmentId ?? a.ID
+        }));
+      } catch (err) {
+        console.error('Failed to load appointments in range:', err);
+        return [];
+      }
+    }
+
+    function dateToStr(d) {
+      if (!d || typeof d !== 'object') return '';
+      return `${d.year}-${String(d.month + 1).padStart(2, '0')}-${String(d.date).padStart(2, '0')}`;
+    }
+
+    function getToday() {
+      const t = new Date();
+      return { year: t.getFullYear(), month: t.getMonth(), date: t.getDate() };
+    }
+
+    function initCalendarState() {
+      const today = getToday();
+      viewYear = today.year;
+      viewMonth = today.month;
+      selectedDate = { year: today.year, month: today.month, date: today.date };
+    }
+
+    function formatScheduleDate(d) {
+      const day = String(d.date).padStart(2, '0');
+      const month = String(d.month + 1).padStart(2, '0');
+      return `${day}.${month}.${d.year}`;
+    }
+
+    async function updateDateDisplays() {
+      const d = new Date(selectedDate.year, selectedDate.month, selectedDate.date);
+      const weekday = WEEKDAY_NAMES[d.getDay() === 0 ? 6 : d.getDay() - 1];
+      const monthName = MONTH_NAMES[selectedDate.month].toLowerCase();
+      document.getElementById('dateText').textContent = `${selectedDate.date} ${monthName} ${weekday}`;
+      document.getElementById('scheduleDate').textContent = formatScheduleDate(selectedDate);
+      await loadAppointments(dateToStr(selectedDate));
+      updateAppointmentsList();
+      await generateSchedule();
+    }
+
+    function sameDate(a, b) {
+      if (!a || !b) return false;
+      // Handle both object format {year, month, date} and ensure types match
+      const aYear = typeof a.year === 'number' ? a.year : parseInt(a.year);
+      const aMonth = typeof a.month === 'number' ? a.month : parseInt(a.month);
+      const aDate = typeof a.date === 'number' ? a.date : parseInt(a.date);
+      const bYear = typeof b.year === 'number' ? b.year : parseInt(b.year);
+      const bMonth = typeof b.month === 'number' ? b.month : parseInt(b.month);
+      const bDate = typeof b.date === 'number' ? b.date : parseInt(b.date);
+      return aYear === bYear && aMonth === bMonth && aDate === bDate;
+    }
+
+    function parsePrice(val) {
+      if (val == null || val === '') return 0;
+      const n = parseFloat(String(val).replace(/[^\d.]/g, '').replace(',', '.'));
+      return isNaN(n) ? 0 : n;
+    }
+
+    async function renderReports() {
+      const list = document.getElementById('reportsList');
+      const summaryEl = document.getElementById('reportsSummary');
+      const labelEl = document.getElementById('reportsDateLabel');
+      if (!list) return;
+      
+      const today = getToday();
+      let selectedDate = reportSelectedDate;
+      
+      // If no date selected, use today
+      if (!selectedDate) {
+        selectedDate = today;
+        reportSelectedDate = today;
+      }
+      
+      // Load appointments for selected date
+      await loadAppointments(dateToStr(selectedDate));
+      const dayAppts = appointments.filter(function(a) { return sameDate(a.date, selectedDate); });
+      
+      if (labelEl) {
+        labelEl.textContent = 'Отчёт за ' + formatScheduleDate(selectedDate);
+      }
+      
+      // Calculate summary statistics for selected date
+      const selectedDatePaid = dayAppts.filter(a => a.paid === true);
+      const selectedDatePatients = selectedDatePaid.length;
+      const selectedDateIncome = selectedDatePaid.reduce(function(s, a) { return s + parsePrice(a.price); }, 0);
+      
+      // Render summary
+      if (summaryEl) {
+        summaryEl.innerHTML = '';
+        
+        // Selected date summary only
+        const selectedCard = document.createElement('div');
+        selectedCard.className = 'report-card';
+        selectedCard.innerHTML = '<div class="report-card-name">' + formatScheduleDate(selectedDate) + '</div>' +
+          '<div class="report-card-row"><span class="report-card-label">Пациенты:</span><span class="report-card-value">' + selectedDatePatients + '</span></div>' +
+          '<div class="report-card-row"><span class="report-card-label">Доход:</span><span class="report-card-value">' + selectedDateIncome.toLocaleString('ru-KZ') + ' ₸</span></div>';
+        summaryEl.appendChild(selectedCard);
+      }
+      
+      // Render doctor cards
+      list.innerHTML = '';
+      DOCTORS.forEach(function(doc, i) {
+        // Filter only paid appointments for selected date
+        const docAppts = dayAppts.filter(function(a) { 
+          return a.doctor === i && a.paid === true; 
+        });
+        const patients = docAppts.length;
+        const income = docAppts.reduce(function(s, a) { return s + parsePrice(a.price); }, 0);
+        const isPractikant25 = (doc.name || '').indexOf('Ақтөре') !== -1 || (doc.name || '').indexOf('Нұрбақыт') !== -1;
+        const rate = isPractikant25 ? 0.25 : 0.3;
+        const percentLabel = isPractikant25 ? '25%' : '30%';
+        const percentValue = Math.round(income * rate);
+        const card = document.createElement('div');
+        card.className = 'report-card';
+        card.innerHTML = '<div class="report-card-name">' + doc.name + '</div>' +
+          '<div class="report-card-spec">' + doc.spec + '</div>' +
+          '<div class="report-card-row"><span class="report-card-label">Пациенты:</span><span class="report-card-value">' + patients + '</span></div>' +
+          '<div class="report-card-row"><span class="report-card-label">Доход:</span><span class="report-card-value">' + income.toLocaleString('ru-KZ') + ' ₸</span></div>' +
+          '<div class="report-card-row"><span class="report-card-label">' + percentLabel + ':</span><span class="report-card-value">' + percentValue.toLocaleString('ru-KZ') + ' ₸</span></div>';
+        list.appendChild(card);
+      });
+    }
+
+    function generateReportsCalendar() {
+      const calendarDays = document.getElementById('reportsCalendarDays');
+      if (!calendarDays) return;
+      calendarDays.innerHTML = '';
+      var y = reportViewYear;
+      var m = reportViewMonth;
+      var el = document.getElementById('reportsCalendarMonth');
+      if (el) el.textContent = MONTH_NAMES[m] + ' ' + y;
+      var first = new Date(y, m, 1);
+      var firstDay = first.getDay();
+      var adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+      var daysInMonth = new Date(y, m + 1, 0).getDate();
+      var lastDayPrevMonth = new Date(y, m, 0).getDate();
+      for (var i = adjustedFirstDay - 1; i >= 0; i--) {
+        var day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = lastDayPrevMonth - i;
+        calendarDays.appendChild(day);
+      }
+      var today = getToday();
+      for (var i = 1; i <= daysInMonth; i++) {
+        var day = document.createElement('div');
+        day.className = 'calendar-day';
+        day.dataset.year = y;
+        day.dataset.month = m;
+        day.dataset.date = i;
+        if (y === today.year && m === today.month && i === today.date) day.classList.add('today');
+        if (reportSelectedDate && y === reportSelectedDate.year && m === reportSelectedDate.month && i === reportSelectedDate.date) day.classList.add('selected');
+        day.textContent = i;
+        day.style.cursor = 'pointer';
+        day.addEventListener('click', function() {
+          reportSelectedDate = { year: +this.dataset.year, month: +this.dataset.month, date: +this.dataset.date };
+          generateReportsCalendar();
+          renderReports().catch(err => console.error('Error rendering reports:', err));
+        });
+        calendarDays.appendChild(day);
+      }
+      var filled = adjustedFirstDay + daysInMonth;
+      var remaining = (filled <= 35 ? 35 : 42) - filled;
+      for (var i = 1; i <= remaining; i++) {
+        var day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = i;
+        calendarDays.appendChild(day);
+      }
+    }
+
+    document.getElementById('reportsCalendarPrev').addEventListener('click', function() {
+      if (reportViewMonth === 0) { reportViewYear--; reportViewMonth = 11; } else reportViewMonth--;
+      generateReportsCalendar();
+      renderStats().catch(err => console.error('Error rendering stats:', err));
+    });
+    document.getElementById('reportsCalendarNext').addEventListener('click', function() {
+      if (reportViewMonth === 11) { reportViewYear++; reportViewMonth = 0; } else reportViewMonth++;
+      generateReportsCalendar();
+      renderStats().catch(err => console.error('Error rendering stats:', err));
+    });
+    document.getElementById('reportsCalendarTodayBtn').addEventListener('click', function() {
+      var t = getToday();
+      reportViewYear = t.year;
+      reportViewMonth = t.month;
+      reportSelectedDate = { year: t.year, month: t.month, date: t.date };
+      generateReportsCalendar();
+      renderReports().catch(err => console.error('Error rendering reports:', err));
+      renderStats().catch(err => console.error('Error rendering stats:', err));
+    });
+
+    document.getElementById('reportsPrintBtn').addEventListener('click', async function() {
+      const today = getToday();
+      await loadAppointments(dateToStr(today));
+      const dayAppts = appointments.filter(function(a) { return sameDate(a.date, today); });
+      const selectedDatePaid = dayAppts.filter(a => a.paid === true);
+      const selectedDatePatients = selectedDatePaid.length;
+      const selectedDateIncome = selectedDatePaid.reduce(function(s, a) { return s + parsePrice(a.price); }, 0);
+
+      let cardsHtml = '<div class="report-card" style="margin-bottom:20px;"><div class="report-card-name">' + formatScheduleDate(today) + '</div>' +
+        '<div class="report-card-row"><span class="report-card-label">Пациенты:</span><span class="report-card-value">' + selectedDatePatients + '</span></div>' +
+        '<div class="report-card-row"><span class="report-card-label">Доход:</span><span class="report-card-value">' + selectedDateIncome.toLocaleString('ru-KZ') + ' ₸</span></div></div>';
+
+      DOCTORS.forEach(function(doc, i) {
+        const docAppts = dayAppts.filter(function(a) { return a.doctor === i && a.paid === true; });
+        const patients = docAppts.length;
+        const income = docAppts.reduce(function(s, a) { return s + parsePrice(a.price); }, 0);
+        const isPractikant25 = (doc.name || '').indexOf('Ақтөре') !== -1 || (doc.name || '').indexOf('Нұрбақыт') !== -1;
+        const rate = isPractikant25 ? 0.25 : 0.3;
+        const percentLabel = isPractikant25 ? '25%' : '30%';
+        const percentValue = Math.round(income * rate);
+        cardsHtml += '<div class="report-card" style="margin-bottom:16px;"><div class="report-card-name">' + doc.name + '</div>' +
+          '<div class="report-card-spec">' + (doc.spec || '') + '</div>' +
+          '<div class="report-card-row"><span class="report-card-label">Пациенты:</span><span class="report-card-value">' + patients + '</span></div>' +
+          '<div class="report-card-row"><span class="report-card-label">Доход:</span><span class="report-card-value">' + income.toLocaleString('ru-KZ') + ' ₸</span></div>' +
+          '<div class="report-card-row"><span class="report-card-label">' + percentLabel + ':</span><span class="report-card-value">' + percentValue.toLocaleString('ru-KZ') + ' ₸</span></div></div>';
+      });
+
+      var detailRows = '';
+      var sortedAppts = dayAppts.slice().sort(function(a, b) {
+        var timeCmp = (a.time || '').localeCompare(b.time || '');
+        if (timeCmp !== 0) return timeCmp;
+        return (a.doctor || 0) - (b.doctor || 0);
+      });
+      sortedAppts.forEach(function(a) {
+        var docName = DOCTORS[a.doctor] ? DOCTORS[a.doctor].name : '';
+        detailRows += '<tr><td>' + (a.time || '') + '</td><td>' + (a.name || '') + '</td><td>' + docName + '</td><td>' + (a.service || '—') + '</td><td>' + (a.price || '—') + '</td></tr>';
+      });
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write('<!DOCTYPE html><html><head><meta charset="utf-8"><title>Отчёт за ' + formatScheduleDate(today) + '</title>' +
+        '<style>@page{size:A4;margin:12mm;}*{box-sizing:border-box;}body{font-family:Inter,sans-serif;margin:0;padding:0;color:#0f172a;max-width:186mm;font-size:11px;}.report-card{background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;margin-bottom:10px;break-inside:avoid;}.report-card-name{font-size:12px;font-weight:600;margin-bottom:8px;}.report-card-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid #f1f5f9;font-size:11px;}.report-card-row:last-child{border-bottom:none;}.report-card-label{color:#64748b;}.report-card-value{font-weight:600;}h1{font-size:18px;margin:0 0 12px 0;}.cards-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:12px;}h2{font-size:14px;margin:12px 0 8px 0;}.print-table{width:100%;border-collapse:collapse;font-size:10px;}.print-table th,.print-table td{border:1px solid #e2e8f0;padding:5px 8px;text-align:left;}.print-table th{background:#f8fafc;font-weight:600;}.print-table tr{page-break-inside:avoid;}</style></head><body>' +
+        '<h1>BK CLINIC — Отчёт за ' + formatScheduleDate(today) + '</h1><div class="cards-grid">' +
+        cardsHtml + '</div>' +
+        '<h2>Детализация: врач и услуга</h2><table class="print-table"><thead><tr><th>Время</th><th>Пациент</th><th>Врач</th><th>Услуга</th><th>Цена</th></tr></thead><tbody>' +
+        detailRows + '</tbody></table></body></html>');
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(function() { printWindow.print(); printWindow.close(); }, 250);
+    });
+
+    let statsViewMode = 'monthly';
+
+    function renderStatsBar(container, data, yAxisEl) {
+      container.innerHTML = '';
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div style="color:var(--text-muted);font-size:14px;padding:20px;">Нет данных</div>';
+        if (yAxisEl) yAxisEl.innerHTML = '';
+        return;
+      }
+      const maxVal = Math.max(...data.map(d => d.patients), 1);
+      const chartHeight = 140;
+      const scaleMax = Math.max(Math.ceil(maxVal * 1.2), 1);
+      if (yAxisEl) {
+        const steps = 6;
+        let labels = [];
+        for (var s = 0; s <= steps; s++) {
+          var v = Math.round((scaleMax * s) / steps);
+          labels.push(v);
+        }
+        yAxisEl.innerHTML = labels.reverse().map(function(l) { return '<span>' + l + '</span>'; }).join('');
+      }
+      data.forEach(function(d, i) {
+        const wrap = document.createElement('div');
+        wrap.className = 'stats-bar-wrap';
+        const val = d.patients;
+        const barHeightPx = scaleMax > 0 ? Math.max((val / scaleMax) * chartHeight, val > 0 ? 4 : 0) : 0;
+        const spacer = document.createElement('div');
+        spacer.className = 'stats-bar-spacer';
+        const bar = document.createElement('div');
+        bar.className = 'stats-bar stats-bar-patients';
+        bar.style.height = barHeightPx + 'px';
+        bar.style.animationDelay = (i * 0.06) + 's';
+        const label = document.createElement('div');
+        label.className = 'stats-bar-label';
+        label.textContent = d.label;
+        const valEl = document.createElement('div');
+        valEl.className = 'stats-bar-value';
+        valEl.textContent = d.patients;
+        wrap.appendChild(spacer);
+        wrap.appendChild(bar);
+        wrap.appendChild(label);
+        wrap.appendChild(valEl);
+        container.appendChild(wrap);
+      });
+    }
+
+    async function renderStats() {
+      const patientsBars = document.getElementById('statsPatientsBars');
+      const patientsYAxis = document.getElementById('statsPatientsYAxis');
+      if (!patientsBars || !patientsYAxis) return;
+
+      const y = reportViewYear;
+      const m = reportViewMonth;
+
+      if (statsViewMode === 'monthly') {
+        var toDate = new Date(y, m + 1, 0);
+        var fromStr = dateToStr({ year: y, month: m, date: 1 });
+        var toStr = dateToStr({ year: y, month: m, date: toDate.getDate() });
+        var list = await loadAppointmentsInRange(fromStr, toStr);
+        var paid = list.filter(a => a.paid === true);
+        var daysInMonth = toDate.getDate();
+        var weeks = [];
+        for (var w = 0; w < 4; w++) {
+          var startDay = w * 7 + 1;
+          var endDay = w === 3 ? daysInMonth : Math.min((w + 1) * 7, daysInMonth);
+          var weekPaid = paid.filter(function(a) {
+            var d = a.date;
+            if (!d) return false;
+            var day = typeof d.date === 'number' ? d.date : parseInt(d.date);
+            return day >= startDay && day <= endDay;
+          });
+          weeks.push({
+            label: 'Нед. ' + (w + 1),
+            patients: weekPaid.length
+          });
+        }
+        renderStatsBar(patientsBars, weeks, patientsYAxis);
+      } else {
+        var fromStr = dateToStr({ year: y, month: 0, date: 1 });
+        var toStr = dateToStr({ year: y, month: 11, date: 31 });
+        var list = await loadAppointmentsInRange(fromStr, toStr);
+        var paid = list.filter(a => a.paid === true);
+        var data = [];
+        for (var mo = 0; mo < 12; mo++) {
+          var monthPaid = paid.filter(function(a) {
+            var d = a.date;
+            if (!d) return false;
+            var m = typeof d.month === 'number' ? d.month : parseInt(d.month);
+            return m === mo;
+          });
+          data.push({
+            label: MONTH_NAMES[mo].slice(0, 3),
+            patients: monthPaid.length
+          });
+        }
+        renderStatsBar(patientsBars, data, patientsYAxis);
+      }
+    }
+
+    document.getElementById('statsToggleMonthly').addEventListener('click', function() {
+      if (statsViewMode === 'monthly') return;
+      statsViewMode = 'monthly';
+      document.getElementById('statsToggleMonthly').classList.add('active');
+      document.getElementById('statsToggleYearly').classList.remove('active');
+      document.querySelector('.stats-section .stats-title').textContent = 'Месячная статистика';
+      renderStats().catch(err => console.error('Error rendering stats:', err));
+    });
+    document.getElementById('statsToggleYearly').addEventListener('click', function() {
+      if (statsViewMode === 'yearly') return;
+      statsViewMode = 'yearly';
+      document.getElementById('statsToggleYearly').classList.add('active');
+      document.getElementById('statsToggleMonthly').classList.remove('active');
+      document.querySelector('.stats-section .stats-title').textContent = 'Годовая статистика';
+      renderStats().catch(err => console.error('Error rendering stats:', err));
+    });
+
+    async function getUniquePatients() {
+      await loadAppointments();
+      const map = {};
+      appointments.forEach(function(a) {
+        const key = (a.name || '').trim() + '|' + (a.phone || '').trim();
+        if (!map[key]) {
+          map[key] = { name: (a.name || '').trim(), phone: (a.phone || '').trim(), appointments: [] };
+        }
+        map[key].appointments.push(a);
+      });
+      const list = [];
+      for (const k in map) list.push(map[k]);
+      list.sort(function(a, b) {
+        const na = (a.name || '').toLowerCase();
+        const nb = (b.name || '').toLowerCase();
+        return na.localeCompare(nb);
+      });
+      return list;
+    }
+
+    function formatAppointmentDate(d) {
+      if (!d || d.year == null) return '';
+      const day = String(d.date).padStart(2, '0');
+      const month = String(d.month + 1).padStart(2, '0');
+      return day + '.' + month + '.' + d.year;
+    }
+
+    async function renderPatientsList(searchText) {
+      const listEl = document.getElementById('patientsList');
+      if (!listEl) return;
+      let patients = await getUniquePatients();
+      const q = (searchText || '').trim().toLowerCase();
+      if (q) {
+        patients = patients.filter(function(p) {
+          return ((p.name || '').toLowerCase().indexOf(q) >= 0) || ((p.phone || '').replace(/\s/g, '').indexOf(q.replace(/\s/g, '')) >= 0);
+        });
+      }
+      listEl.innerHTML = '';
+      patients.forEach(function(p, idx) {
+        const item = document.createElement('div');
+        item.className = 'patients-list-item';
+        item.dataset.index = idx;
+        item.innerHTML = '<div class="patients-list-item-name">' + (p.name || '—') + '</div><div class="patients-list-item-phone">' + (p.phone || '') + '</div>';
+        item.addEventListener('click', function() {
+          document.querySelectorAll('.patients-list-item').forEach(function(el) { el.classList.remove('active'); });
+          item.classList.add('active');
+          showPatientProfile(p);
+        });
+        listEl.appendChild(item);
+      });
+    }
+
+    function showPatientProfile(patient) {
+      const wrap = document.getElementById('patientProfileContent');
+      if (!wrap) return;
+      const appts = (patient.appointments || []).slice().sort(function(a, b) {
+        const da = a.date;
+        const db = b.date;
+        if (!da || !db) return 0;
+        if (da.year !== db.year) return da.year - db.year;
+        if (da.month !== db.month) return da.month - db.month;
+        if (da.date !== db.date) return da.date - db.date;
+        return (a.time || '').localeCompare(b.time || '');
+      });
+      let html = '<div class="patients-profile-header">' +
+        '<h3 class="patients-profile-title">' + (patient.name || '—') + '</h3>' +
+        '<div class="patients-profile-subtitle">' + (patient.phone || '') + '</div></div>';
+      html += '<div class="patients-profile-history">История приёмов</div>';
+      if (appts.length === 0) {
+        html += '<div class="patients-profile-empty">Нет записей</div>';
+      } else {
+        appts.forEach(function(a) {
+          const docName = DOCTORS[a.doctor] ? DOCTORS[a.doctor].name : '';
+          html += '<div class="patient-history-item">' +
+            '<div class="date">Дата: ' + formatAppointmentDate(a.date) + '</div>' +
+            '<div class="time">Время: ' + (a.time || '') + '</div>' +
+            '<div class="doctor">Врач: ' + docName + '</div>' +
+            '<div class="service">Услуга: ' + (a.service || '—') + '</div>' +
+            (a.price ? '<div style="margin-top:4px;color:var(--text-muted);">Цена: ' + a.price + '</div>' : '') +
+            '</div>';
+        });
+      }
+      wrap.innerHTML = html;
+    }
+
+    async function switchView(view) {
+      const main = document.getElementById('mainContent');
+      const items = document.querySelectorAll('.sidebar .menu-item');
+      items.forEach(function(el) {
+        el.classList.toggle('active', el.getAttribute('data-view') === view);
+      });
+      main.classList.remove('view-reports', 'view-patients');
+      if (view === 'reports') {
+        main.classList.add('view-reports');
+        var t = getToday();
+        reportSelectedDate = reportSelectedDate || { year: t.year, month: t.month, date: t.date };
+        reportViewYear = reportViewYear != null ? reportViewYear : reportSelectedDate.year;
+        reportViewMonth = reportViewMonth != null ? reportViewMonth : reportSelectedDate.month;
+        generateReportsCalendar();
+        await renderReports();
+        await renderStats();
+      } else if (view === 'patients') {
+        main.classList.add('view-patients');
+        await renderPatientsList();
+        document.getElementById('patientProfileContent').innerHTML = '<div class="patients-profile-empty">Выберите пациента из списка</div>';
+      }
+    }
+
+    document.querySelectorAll('.sidebar .menu-item').forEach(function(el) {
+      el.addEventListener('click', function() {
+        var v = this.getAttribute('data-view');
+        switchView(v || 'schedule').catch(err => console.error('Error switching view:', err));
+      });
+    });
+
+    (function() {
+      var searchEl = document.getElementById('patientsSearch');
+      if (searchEl) {
+        searchEl.addEventListener('input', function() {
+          renderPatientsList(this.value).catch(err => console.error('Error rendering patients:', err));
+        });
+      }
+    })();
+
+    function updateAppointmentsList() {
+      const list = document.getElementById('appointmentsList');
+      if (!list) return;
+      const dayAppts = appointments.filter(a => sameDate(a.date, selectedDate));
+      list.innerHTML = '';
+      dayAppts.forEach(function(a) {
+        const item = document.createElement('div');
+        item.className = 'appointment-item';
+        const editIcon = document.createElement('svg');
+        editIcon.className = 'appointment-edit';
+        editIcon.setAttribute('viewBox', '0 0 24 24');
+        editIcon.setAttribute('fill', 'currentColor');
+        editIcon.innerHTML = '<path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>';
+        editIcon.style.cursor = 'pointer';
+        editIcon.addEventListener('click', function(e) {
+          e.stopPropagation();
+          openEditAppointmentModal(a);
+        });
+        item.innerHTML = '<div class="patient"><svg class="status-icon" viewBox="0 0 24 24" fill="currentColor" style="color:#10b981;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Пациент: ' + (a.name || '') + '</div>' +
+          '<div class="doctor">Врач: ' + (DOCTORS[a.doctor] ? DOCTORS[a.doctor].name : '') + '</div>' +
+          '<div class="time">' + a.time + '</div>';
+        item.appendChild(editIcon);
+        list.appendChild(item);
+      });
+    }
+
+    function generateCalendar() {
+      const calendarDays = document.getElementById('calendarDays');
+      calendarDays.innerHTML = '';
+
+      document.getElementById('calendarMonth').textContent = `${MONTH_NAMES[viewMonth]} ${viewYear}`;
+
+      const first = new Date(viewYear, viewMonth, 1);
+      const firstDay = first.getDay();
+      const adjustedFirstDay = firstDay === 0 ? 6 : firstDay - 1;
+
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const lastDayPrevMonth = new Date(viewYear, viewMonth, 0).getDate();
+
+      for (let i = adjustedFirstDay - 1; i >= 0; i--) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = lastDayPrevMonth - i;
+        calendarDays.appendChild(day);
+      }
+
+      const today = getToday();
+      for (let i = 1; i <= daysInMonth; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day';
+        day.dataset.year = viewYear;
+        day.dataset.month = viewMonth;
+        day.dataset.date = i;
+        if (viewYear === today.year && viewMonth === today.month && i === today.date) {
+          day.classList.add('today');
+        }
+        if (selectedDate && viewYear === selectedDate.year && viewMonth === selectedDate.month && i === selectedDate.date) {
+          day.classList.add('selected');
+        }
+        day.textContent = i;
+        day.style.cursor = 'pointer';
+        day.addEventListener('click', () => {
+          selectedDate = { year: +day.dataset.year, month: +day.dataset.month, date: +day.dataset.date };
+          generateCalendar();
+          updateDateDisplays().catch(err => console.error('Error updating date displays:', err));
+        });
+        calendarDays.appendChild(day);
+      }
+
+      const filled = adjustedFirstDay + daysInMonth;
+      const remaining = (filled <= 35 ? 35 : 42) - filled;
+      for (let i = 1; i <= remaining; i++) {
+        const day = document.createElement('div');
+        day.className = 'calendar-day other-month';
+        day.textContent = i;
+        calendarDays.appendChild(day);
+      }
+    }
+
+    document.getElementById('calendarPrev').addEventListener('click', () => {
+      if (viewMonth === 0) { viewYear--; viewMonth = 11; } else viewMonth--;
+      generateCalendar();
+      updateDateDisplays().catch(err => console.error('Error updating date displays:', err));
+    });
+    document.getElementById('calendarNext').addEventListener('click', () => {
+      if (viewMonth === 11) { viewYear++; viewMonth = 0; } else viewMonth++;
+      generateCalendar();
+      updateDateDisplays().catch(err => console.error('Error updating date displays:', err));
+    });
+    document.getElementById('calendarTodayBtn').addEventListener('click', () => {
+      const t = getToday();
+      viewYear = t.year;
+      viewMonth = t.month;
+      selectedDate = { year: t.year, month: t.month, date: t.date };
+      generateCalendar();
+      updateDateDisplays().catch(err => console.error('Error updating date displays:', err));
+    });
+
+    initCalendarState();
+    generateCalendar();
+    loadDoctors().then(() => {
+      updateDateDisplays().catch(err => console.error('Error updating date displays:', err));
+    }).catch(err => console.error('Error loading doctors:', err));
+
+    // Schedule grid generation
+    async function generateSchedule() {
+      const scheduleBody = document.getElementById('scheduleBody');
+      if (!scheduleBody) return;
+      
+      // Ensure appointments are loaded for the selected date
+      if (!selectedDate) return;
+      await loadAppointments(dateToStr(selectedDate));
+      
+      scheduleBody.innerHTML = '';
+      const times = [];
+      for (let h = 8; h <= 20; h++) {
+        times.push(`${String(h).padStart(2, '0')}:00`);
+        if (h < 20) times.push(`${String(h).padStart(2, '0')}:30`);
+      }
+      scheduleTimes = times.slice();
+
+      const dayAppts = appointments.filter(a => {
+        if (!a.date || typeof a.date !== 'object') return false;
+        return sameDate(a.date, selectedDate);
+      });
+
+      times.forEach(time => {
+        const row = document.createElement('tr');
+        const timeCellLeft = document.createElement('td');
+        timeCellLeft.className = 'time-column';
+        timeCellLeft.textContent = time;
+        row.appendChild(timeCellLeft);
+
+        for (let doc = 0; doc < DOCTORS.length; doc++) {
+          const cell = document.createElement('td');
+          cell.style.position = 'relative';
+          cell.style.height = '80px';
+          
+          // Find appointment - check both exact match and with type conversion
+          const appt = dayAppts.find(a => {
+            const timeMatch = String(a.time || '').trim() === String(time).trim();
+            const doctorMatch = Number(a.doctor) === Number(doc);
+            return timeMatch && doctorMatch;
+          });
+          if (appt) {
+            const block = document.createElement('div');
+            // Set color based on payment status: green if paid, yellow if not paid
+            block.className = appt.paid ? 'appointment-block light-green' : 'appointment-block yellow';
+            block.style.top = '4px';
+            block.style.bottom = '4px';
+            block.style.whiteSpace = 'normal';
+            const iconSvg = '<svg class="appointment-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
+            // Add paid indicator if payment is made
+            const paidIcon = appt.paid ? '<svg class="appointment-paid-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 16px; height: 16px; margin-left: 6px; flex-shrink: 0;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>' : '';
+            let content = '<div class="appointment-block-content">' + iconSvg + '<span class="appointment-name">' + (appt.name || '') + '</span>' + paidIcon + '</div>';
+            if (appt.service || appt.price) {
+              content += '<div style="font-size: 10px; margin-top: 2px; opacity: 0.9;">' + (appt.service || '') + (appt.service && appt.price ? ' — ' : '') + (appt.price || '') + '</div>';
+            }
+            block.innerHTML = content;
+            block.draggable = true;
+            block.dataset.appointmentId = appt.id;
+            
+            // Drag & Drop handlers
+            block.addEventListener('dragstart', function(e) {
+              this.classList.add('dragging');
+              e.dataTransfer.effectAllowed = 'move';
+              e.dataTransfer.setData('text/plain', JSON.stringify({
+                appointmentId: appt.id,
+                currentTime: time,
+                currentDoctor: doc
+              }));
+            });
+            
+            block.addEventListener('dragend', function(e) {
+              this.classList.remove('dragging');
+              // Remove drag-over class from all cells
+              document.querySelectorAll('.schedule-table td').forEach(c => c.classList.remove('drag-over'));
+            });
+            
+            block.addEventListener('click', function(e) {
+              if (!e.defaultPrevented) {
+                e.stopPropagation();
+                openEditAppointmentModal(appt);
+              }
+            });
+            
+            cell.appendChild(block);
+          } else {
+            cell.className = 'empty-cell';
+            cell.dataset.time = time;
+            cell.dataset.doctor = doc;
+            
+            // Drop zone handlers
+            cell.addEventListener('dragover', function(e) {
+              e.preventDefault();
+              e.dataTransfer.dropEffect = 'move';
+              this.classList.add('drag-over');
+            });
+            
+            cell.addEventListener('dragleave', function(e) {
+              this.classList.remove('drag-over');
+            });
+            
+            cell.addEventListener('drop', async function(e) {
+              e.preventDefault();
+              e.stopPropagation();
+              this.classList.remove('drag-over');
+              
+              try {
+                const data = JSON.parse(e.dataTransfer.getData('text/plain'));
+                const appointmentId = data.appointmentId;
+                const newTime = this.dataset.time;
+                const newDoctor = parseInt(this.dataset.doctor, 10);
+                
+                // Check if target cell already has an appointment
+                const existingAppt = dayAppts.find(a => {
+                  return a.time === newTime && a.doctor === newDoctor;
+                });
+                
+                if (existingAppt) {
+                  alert('Это время уже занято');
+                  return;
+                }
+                
+                // Update appointment
+                await apiPut(`/api/appointments/${appointmentId}`, {
+                  time: newTime,
+                  doctor: newDoctor
+                });
+                
+                // Reload and refresh
+                await loadAppointments(dateToStr(selectedDate));
+                await generateSchedule();
+                updateAppointmentsList();
+              } catch (err) {
+                console.error('Failed to move appointment:', err);
+                alert('Ошибка при перемещении записи');
+              }
+            });
+            
+            cell.addEventListener('click', function(e) {
+              if (!e.defaultPrevented) {
+                const time = this.dataset.time;
+                const doc = parseInt(this.dataset.doctor, 10);
+                document.querySelectorAll('.schedule-table td.schedule-cell-selected').forEach(function(c) { c.classList.remove('schedule-cell-selected'); });
+                if (e.shiftKey && lastClickedCell && lastClickedCell.doctor === doc) {
+                  const idx0 = scheduleTimes.indexOf(lastClickedCell.time);
+                  const idx1 = scheduleTimes.indexOf(time);
+                  if (idx0 !== -1 && idx1 !== -1) {
+                    const from = Math.min(idx0, idx1);
+                    const to = Math.max(idx0, idx1);
+                    const selectedTimes = [];
+                    for (let k = from; k <= to; k++) selectedTimes.push(scheduleTimes[k]);
+                    const occupied = selectedTimes.some(function(t) {
+                      return dayAppts.some(function(a) { return Number(a.doctor) === doc && String(a.time).trim() === t; });
+                    });
+                    if (occupied) {
+                      lastClickedCell = { time: time, doctor: doc };
+                      openPatientModal([time], doc);
+                      this.classList.add('schedule-cell-selected');
+                      return;
+                    }
+                    modalTimes = selectedTimes;
+                    modalDoctor = doc;
+                    modalTime = selectedTimes[0];
+                    lastClickedCell = { time: time, doctor: doc };
+                    document.querySelectorAll('.schedule-table td.empty-cell').forEach(function(c) {
+                      if (parseInt(c.dataset.doctor, 10) === doc && selectedTimes.indexOf(c.dataset.time) !== -1) c.classList.add('schedule-cell-selected');
+                    });
+                    openPatientModal(selectedTimes, doc);
+                    return;
+                  }
+                }
+                lastClickedCell = { time: time, doctor: doc };
+                modalTimes = [time];
+                modalTime = time;
+                modalDoctor = doc;
+                this.classList.add('schedule-cell-selected');
+                openPatientModal([time], doc);
+              }
+            });
+          }
+          
+          row.appendChild(cell);
+        }
+
+        const timeCellRight = document.createElement('td');
+        timeCellRight.className = 'time-column';
+        timeCellRight.textContent = time;
+        row.appendChild(timeCellRight);
+        
+        scheduleBody.appendChild(row);
+      });
+    }
+
+    function openPatientModal(timesArray, doctor) {
+      modalTimes = Array.isArray(timesArray) ? timesArray : [timesArray];
+      modalTime = modalTimes[0] || '';
+      modalDoctor = doctor;
+      var timeLabel = modalTimes.length > 1 ? (modalTimes[0] + ' – ' + modalTimes[modalTimes.length - 1]) : modalTime;
+      document.getElementById('patientModalTitle').textContent = 'Запись пациента — ' + timeLabel + ', ' + (DOCTORS[doctor] ? DOCTORS[doctor].name : '');
+      document.getElementById('patientName').value = '';
+      document.getElementById('patientPhone').value = '';
+      document.getElementById('patientService').value = '';
+      document.getElementById('patientPrice').value = '';
+      document.getElementById('patientPaid').checked = false;
+      updatePatientPaidCheckboxState();
+      document.getElementById('patientModal').classList.add('open');
+    }
+
+    function closePatientModal() {
+      document.getElementById('patientModal').classList.remove('open');
+      document.querySelectorAll('.schedule-table td.schedule-cell-selected').forEach(function(c) { c.classList.remove('schedule-cell-selected'); });
+    }
+
+    document.getElementById('patientModalCancel').addEventListener('click', closePatientModal);
+    document.getElementById('patientModal').addEventListener('click', function(e) {
+      if (e.target === this) closePatientModal();
+    });
+    function showPhoneError() {
+      const phoneInput = document.getElementById('patientPhone');
+      const phoneError = document.getElementById('patientPhoneError');
+      phoneInput.classList.add('error');
+      phoneError.classList.add('show');
+    }
+
+    function hidePhoneError() {
+      const phoneInput = document.getElementById('patientPhone');
+      const phoneError = document.getElementById('patientPhoneError');
+      phoneInput.classList.remove('error');
+      phoneError.classList.remove('show');
+    }
+
+    // Allow only digits in phone field
+    function allowOnlyDigits(input) {
+      input.addEventListener('input', function(e) {
+        // Remove all non-digit characters
+        this.value = this.value.replace(/\D/g, '');
+        if (this.id === 'patientPhone' && this.value.trim()) {
+          hidePhoneError();
+        }
+      });
+      
+      // Prevent non-digit characters on keypress
+      input.addEventListener('keypress', function(e) {
+        const char = String.fromCharCode(e.which);
+        if (!/\d/.test(char)) {
+          e.preventDefault();
+        }
+      });
+      
+      // Handle paste event
+      input.addEventListener('paste', function(e) {
+        e.preventDefault();
+        const paste = (e.clipboardData || window.clipboardData).getData('text');
+        const digitsOnly = paste.replace(/\D/g, '');
+        this.value = digitsOnly;
+        if (this.id === 'patientPhone' && this.value.trim()) {
+          hidePhoneError();
+        }
+      });
+    }
+
+    // Apply to both phone input fields
+    allowOnlyDigits(document.getElementById('patientPhone'));
+    allowOnlyDigits(document.getElementById('editPatientPhone'));
+
+    function updatePatientPaidCheckboxState() {
+      const priceInput = document.getElementById('patientPrice');
+      const paidCheckbox = document.getElementById('patientPaid');
+      const hasPrice = (priceInput.value || '').trim().length > 0;
+      paidCheckbox.disabled = !hasPrice;
+      if (!hasPrice) paidCheckbox.checked = false;
+    }
+    document.getElementById('patientPrice').addEventListener('input', updatePatientPaidCheckboxState);
+
+    document.getElementById('patientModalSave').addEventListener('click', async function() {
+      const name = document.getElementById('patientName').value.trim();
+      const phone = document.getElementById('patientPhone').value.trim();
+      const service = document.getElementById('patientService').value.trim();
+      const price = document.getElementById('patientPrice').value.trim();
+      
+      // Validation: имя и номер обязательны
+      if (!name) {
+        alert('Пожалуйста, введите имя пациента');
+        document.getElementById('patientName').focus();
+        return;
+      }
+      if (!phone) {
+        showPhoneError();
+        document.getElementById('patientPhone').focus();
+        return;
+      }
+      
+      hidePhoneError();
+      var timesToSave = modalTimes && modalTimes.length > 0 ? modalTimes : [modalTime];
+      var paid = document.getElementById('patientPaid').checked;
+      try {
+        for (var ti = 0; ti < timesToSave.length; ti++) {
+          await apiPost('/api/appointments', {
+            name: name,
+            phone: phone,
+            service: service,
+            price: price,
+            time: timesToSave[ti],
+            doctor: modalDoctor,
+            date: { year: selectedDate.year, month: selectedDate.month, date: selectedDate.date },
+            came: false,
+            paid: paid
+          });
+        }
+        await loadAppointments(dateToStr(selectedDate));
+        await generateSchedule();
+        updateAppointmentsList();
+        closePatientModal();
+      } catch (err) {
+        console.error('Failed to create appointment:', err);
+        alert('Ошибка при создании записи');
+      }
+    });
+
+    var editingAppointment = null;
+
+    function getScheduleTimes() {
+      var times = [];
+      for (var h = 8; h <= 20; h++) {
+        times.push(String(h).padStart(2, '0') + ':00');
+        if (h < 20) times.push(String(h).padStart(2, '0') + ':30');
+      }
+      return times;
+    }
+
+    // Update paid checkbox state when price changes
+    document.getElementById('editPatientPrice').addEventListener('input', function() {
+      updatePaidCheckboxState();
+    });
+
+    function updatePaidCheckboxState() {
+      const priceInput = document.getElementById('editPatientPrice');
+      const paidCheckbox = document.getElementById('editPaid');
+      const hasPrice = (priceInput.value || '').trim().length > 0;
+      paidCheckbox.disabled = !hasPrice;
+      if (!hasPrice) {
+        paidCheckbox.checked = false;
+      }
+    }
+
+    function openEditAppointmentModal(appt) {
+      editingAppointment = appt;
+      document.getElementById('editPatientName').value = appt.name || '';
+      document.getElementById('editPatientPhone').value = appt.phone || '';
+      document.getElementById('editPatientService').value = appt.service || '';
+      document.getElementById('editPatientPrice').value = appt.price || '';
+      document.getElementById('editPaid').checked = !!appt.paid;
+      updatePaidCheckboxState();
+      document.getElementById('editAppointmentModal').classList.add('open');
+    }
+
+    function closeEditAppointmentModal() {
+      document.getElementById('editAppointmentModal').classList.remove('open');
+      editingAppointment = null;
+    }
+
+    document.getElementById('editAppointmentModalCancel').addEventListener('click', closeEditAppointmentModal);
+    document.getElementById('editAppointmentModal').addEventListener('click', async function(e) {
+      if (e.target === this) {
+        closeEditAppointmentModal();
+        return;
+      }
+      // Delete button — event delegation (closest в случае клика по дочернему элементу)
+      if (e.target.closest('#editAppointmentModalDelete')) {
+        e.stopPropagation();
+        e.preventDefault();
+        const apptId = editingAppointment?.id ?? editingAppointment?._id ?? editingAppointment?.appointmentId ?? editingAppointment?.ID;
+        if (!editingAppointment || !apptId) {
+          alert('Ошибка: запись не выбрана');
+          return;
+        }
+        const deletedAppointment = JSON.parse(JSON.stringify(editingAppointment));
+        try {
+          await apiDelete(`/api/appointments/${apptId}`);
+          await loadAppointments(dateToStr(selectedDate));
+          closeEditAppointmentModal();
+          await generateSchedule();
+          updateAppointmentsList();
+          showUndoNotification(deletedAppointment);
+        } catch (err) {
+          console.error('Failed to delete appointment:', err);
+          alert('Ошибка при удалении записи');
+        }
+        return;
+      }
+      // Save button — event delegation
+      if (e.target.closest('#editAppointmentModalSave')) {
+        e.stopPropagation();
+        e.preventDefault();
+        const apptId = editingAppointment?.id ?? editingAppointment?._id ?? editingAppointment?.appointmentId ?? editingAppointment?.ID;
+        if (!editingAppointment || !apptId) {
+          alert('Ошибка: запись не выбрана');
+          return;
+        }
+        var name = document.getElementById('editPatientName').value.trim();
+        if (!name) {
+          alert('Имя обязательно для заполнения');
+          return;
+        }
+        var d = editingAppointment.date;
+        var updateData = {
+          name: name,
+          phone: document.getElementById('editPatientPhone').value.trim(),
+          service: document.getElementById('editPatientService').value.trim(),
+          price: document.getElementById('editPatientPrice').value.trim(),
+          paid: document.getElementById('editPaid').checked,
+          time: editingAppointment.time,
+          doctor: editingAppointment.doctor
+        };
+        if (d && d.year !== undefined) {
+          updateData.date = { year: d.year, month: d.month, date: d.date };
+        }
+        try {
+          await apiPut(`/api/appointments/${apptId}`, updateData);
+          await loadAppointments(dateToStr(selectedDate));
+          await generateSchedule();
+          updateAppointmentsList();
+          closeEditAppointmentModal();
+        } catch (err) {
+          console.error('Failed to update appointment:', err);
+          alert('Ошибка при обновлении записи');
+        }
+        return;
+      }
+    });
+
+    let undoTimeout = null;
+    let undoInterval = null;
+    let deletedAppointmentData = null;
+
+    function showUndoNotification(appointmentData) {
+      deletedAppointmentData = appointmentData;
+      const undoNotification = document.getElementById('undoNotification');
+      const undoTimer = document.getElementById('undoTimer');
+      undoNotification.classList.add('show');
+      
+      if (undoTimeout) clearTimeout(undoTimeout);
+      if (undoInterval) clearInterval(undoInterval);
+      
+      let secondsLeft = 10;
+      undoTimer.textContent = secondsLeft;
+      
+      undoInterval = setInterval(function() {
+        secondsLeft--;
+        undoTimer.textContent = secondsLeft;
+        if (secondsLeft <= 0 && undoInterval) {
+          clearInterval(undoInterval);
+          undoInterval = null;
+        }
+      }, 1000);
+      
+      undoTimeout = setTimeout(function() {
+        hideUndoNotification();
+      }, 10000);
+    }
+
+    function hideUndoNotification() {
+      const undoNotification = document.getElementById('undoNotification');
+      undoNotification.classList.remove('show');
+      deletedAppointmentData = null;
+      if (undoTimeout) {
+        clearTimeout(undoTimeout);
+        undoTimeout = null;
+      }
+      if (undoInterval) {
+        clearInterval(undoInterval);
+        undoInterval = null;
+      }
+    }
+
+    document.getElementById('undoButton').addEventListener('click', async function() {
+      if (!deletedAppointmentData) return;
+      
+      try {
+        // Restore appointment
+        const restored = await apiPost('/api/appointments', {
+          name: deletedAppointmentData.name,
+          phone: deletedAppointmentData.phone,
+          service: deletedAppointmentData.service,
+          price: deletedAppointmentData.price,
+          time: deletedAppointmentData.time,
+          doctor: deletedAppointmentData.doctor,
+          date: deletedAppointmentData.date,
+          came: deletedAppointmentData.came || false,
+          paid: deletedAppointmentData.paid || false
+        });
+        
+        hideUndoNotification();
+        
+        // Reload and refresh
+        await loadAppointments(dateToStr(selectedDate));
+        await generateSchedule();
+        updateAppointmentsList();
+      } catch (err) {
+        console.error('Failed to restore appointment:', err);
+        alert('Ошибка при восстановлении записи');
+      }
+    });
+
+
+    // Sidebar toggle (открытие/закрытие меню)
+    (function() {
+      var sidebar = document.getElementById('sidebar');
+      var mainContent = document.querySelector('.main-content');
+      var toggleBtn = document.getElementById('sidebarToggle');
+      if (sidebar && mainContent && toggleBtn) {
+        toggleBtn.addEventListener('click', function() {
+          sidebar.classList.toggle('collapsed');
+          mainContent.classList.toggle('sidebar-collapsed');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>
