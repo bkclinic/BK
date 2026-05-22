@@ -1625,6 +1625,13 @@
       gap: 12px;
     }
 
+    .modal-footer-edit-left {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
     .modal-footer-right {
       display: flex;
       gap: 12px;
@@ -2278,53 +2285,63 @@
           <label>Номер телефона</label>
           <input type="tel" id="editPatientPhone" placeholder="+7 ...">
         </div>
-        <div class="modal-field">
-          <label>Услуга</label>
-          <select id="editServiceMain">
-            <option value="">Выберите услугу</option>
-            <option value="Лечение кариеса">Лечение кариеса</option>
-            <option value="Лечение пульпита">Лечение пульпита</option>
-            <option value="Лечение периодонтита">Лечение периодонтита</option>
-            <option value="Хирургическая стоматология">Хирургическая стоматология</option>
-            <option value="Ортодонтическая стоматология">Ортодонтическая стоматология</option>
-            <option value="Дополнительные услуги">Дополнительные услуги</option>
-          </select>
-        </div>
-        <div class="modal-field service-sub-field" id="editServiceSubField" hidden>
-          <label id="editServiceSubLabel">Тип</label>
-          <select id="editServiceSub">
-            <option value="">Выберите тип</option>
-          </select>
-        </div>
-        <div class="modal-field dental-chart-field">
-          <label>Зуб <span class="dental-chart-selected-label" id="editToothLabel"></span></label>
-          <div class="dental-chart" id="editDentalChart"></div>
-          <div class="dental-chart-hint">Нажмите на номер зуба. Повторное нажатие — снять выбор.</div>
-        </div>
-        <div class="modal-field">
-          <label>Цена</label>
-          <input type="text" id="editPatientPrice" placeholder="Цена">
+        <div id="editServiceBlocks">
+          <div class="service-block" data-block-id="0">
+            <div class="service-block-header">
+              <span class="service-block-title">Услуга 1</span>
+            </div>
+            <div class="modal-field">
+              <label>Услуга</label>
+              <select id="editServiceMain">
+                <option value="">Выберите услугу</option>
+                <option value="Лечение кариеса">Лечение кариеса</option>
+                <option value="Лечение пульпита">Лечение пульпита</option>
+                <option value="Лечение периодонтита">Лечение периодонтита</option>
+                <option value="Хирургическая стоматология">Хирургическая стоматология</option>
+                <option value="Ортодонтическая стоматология">Ортодонтическая стоматология</option>
+                <option value="Дополнительные услуги">Дополнительные услуги</option>
+              </select>
+            </div>
+            <div class="modal-field service-sub-field" id="editServiceSubField" hidden>
+              <label id="editServiceSubLabel">Тип</label>
+              <select id="editServiceSub">
+                <option value="">Выберите тип</option>
+              </select>
+            </div>
+            <div class="modal-field dental-chart-field">
+              <label>Зуб <span class="dental-chart-selected-label" id="editToothLabel"></span></label>
+              <div class="dental-chart" id="editDentalChart"></div>
+              <div class="dental-chart-hint">Нажмите на номер зуба. Повторное нажатие — снять выбор.</div>
+            </div>
+            <div class="modal-field">
+              <label>Цена</label>
+              <input type="text" class="service-price-input" id="editPatientPrice" placeholder="Цена">
+            </div>
+            <div class="modal-field">
+              <label>Комментарий</label>
+              <textarea class="service-comment-input" id="editPatientComment" placeholder="Комментарий к записи" rows="3"></textarea>
+            </div>
+            <div class="modal-field appointment-images-field">
+              <label>Фото</label>
+              <input type="file" class="service-image-input" id="editImageInput" accept="image/*" multiple hidden>
+              <div class="appointment-images-actions">
+                <button type="button" class="btn-add-image service-image-add-btn" id="editImageAddBtn">Добавить фото</button>
+                <span class="appointment-images-hint">JPG, PNG — сохраняется в Firebase Storage</span>
+              </div>
+              <div class="appointment-images-preview service-images-preview" id="editImagesPreview"></div>
+            </div>
+          </div>
         </div>
         <div class="modal-field payment-methods-field">
           <div class="payment-status-label" id="editPaymentStatus">Ақша төленбеді</div>
           <div class="payment-methods-grid" id="editPaymentMethods"></div>
         </div>
-        <div class="modal-field">
-          <label>Комментарий</label>
-          <textarea id="editPatientComment" placeholder="Комментарий к записи" rows="3"></textarea>
-        </div>
-        <div class="modal-field appointment-images-field">
-          <label>Фото</label>
-          <input type="file" id="editImageInput" accept="image/*" multiple hidden>
-          <div class="appointment-images-actions">
-            <button type="button" class="btn-add-image" id="editImageAddBtn">Добавить фото</button>
-            <span class="appointment-images-hint">JPG, PNG — сохраняется в Firebase Storage</span>
-          </div>
-          <div class="appointment-images-preview" id="editImagesPreview"></div>
-        </div>
       </div>
       <div class="modal-footer modal-footer-edit">
-        <button type="button" class="modal-btn modal-btn-danger" id="editAppointmentModalDelete">Удалить запись</button>
+        <div class="modal-footer-edit-left">
+          <button type="button" class="modal-btn-add-service" id="editAddServiceBtn">Добавить еще один услуга</button>
+          <button type="button" class="modal-btn modal-btn-danger" id="editAppointmentModalDelete">Удалить запись</button>
+        </div>
         <div class="modal-footer-right">
           <button type="button" class="modal-btn modal-btn-cancel" id="editAppointmentModalCancel">Отмена</button>
           <button type="button" class="modal-btn modal-btn-save" id="editAppointmentModalSave">Сохранить</button>
@@ -2525,6 +2542,15 @@
       return parts.join('; ');
     }
 
+    function formatHistoryPriceLine(price, appt) {
+      if (!price) return '';
+      var line = 'Цена: ' + price;
+      if (appt.paid && appt.paymentMethod) {
+        line += ' — ' + appt.paymentMethod;
+      }
+      return line;
+    }
+
     function resetImageField(prefix) {
       var state = imageState[prefix];
       if (!state) return;
@@ -2666,8 +2692,10 @@
       return quad;
     }
 
-    function buildDentalChart(containerId, prefix) {
-      var container = document.getElementById(containerId);
+    function buildDentalChart(containerOrId, prefix) {
+      var container = typeof containerOrId === 'string'
+        ? document.getElementById(containerOrId)
+        : containerOrId;
       if (!container) return;
       container.innerHTML = '';
 
@@ -2693,15 +2721,13 @@
 
     function setToothSelection(prefix, tooth) {
       toothSelection[prefix] = tooth ? String(tooth) : '';
-      var chartId = prefix === 'edit' ? 'editDentalChart' : getDentalChartId(prefix);
-      var labelId = prefix === 'edit' ? 'editToothLabel' : (prefix + 'ToothLabel');
-      var chart = document.getElementById(chartId);
+      var chart = document.getElementById(getDentalChartId(prefix));
       if (chart) {
         chart.querySelectorAll('.dental-tooth').forEach(function(btn) {
           btn.classList.toggle('selected', btn.dataset.tooth === toothSelection[prefix]);
         });
       }
-      var label = document.getElementById(labelId);
+      var label = document.getElementById(prefix + 'ToothLabel');
       if (label) {
         label.textContent = toothSelection[prefix] ? '— № ' + toothSelection[prefix] : '';
       }
@@ -2859,13 +2885,34 @@
     }
 
     let nextPatientServiceBlockId = 1;
+    let nextEditServiceBlockId = 1;
 
-    function getBlockPrefix(blockId) {
+    function getBlockPrefix(blockId, modal) {
+      modal = modal || 'patient';
+      if (modal === 'edit') {
+        return String(blockId) === '0' ? 'edit' : ('editSvc' + blockId);
+      }
       return String(blockId) === '0' ? 'patient' : ('svc' + blockId);
     }
 
+    function getServiceBlocksContainerId(modal) {
+      return modal === 'edit' ? 'editServiceBlocks' : 'patientServiceBlocks';
+    }
+
     function getDentalChartId(prefix) {
-      return prefix === 'patient' ? 'patientDentalChart' : (prefix + 'DentalChart');
+      if (prefix === 'patient') return 'patientDentalChart';
+      if (prefix === 'edit') return 'editDentalChart';
+      return prefix + 'DentalChart';
+    }
+
+    function getPriceInputId(prefix) {
+      if (prefix === 'edit') return 'editPatientPrice';
+      return prefix + 'Price';
+    }
+
+    function getCommentInputId(prefix) {
+      if (prefix === 'edit') return 'editPatientComment';
+      return prefix + 'Comment';
     }
 
     function getServiceMainOptionsHtml() {
@@ -2892,8 +2939,8 @@
       });
     }
 
-    function createPatientServiceBlock(blockId) {
-      var prefix = getBlockPrefix(blockId);
+    function createServiceBlock(modal, blockId) {
+      var prefix = getBlockPrefix(blockId, modal);
       var num = parseInt(blockId, 10) + 1;
       var block = document.createElement('div');
       block.className = 'service-block';
@@ -2914,9 +2961,9 @@
           '<div class="dental-chart" id="' + getDentalChartId(prefix) + '"></div>' +
           '<div class="dental-chart-hint">Нажмите на номер зуба. Повторное нажатие — снять выбор.</div></div>' +
         '<div class="modal-field"><label>Цена</label>' +
-          '<input type="text" class="service-price-input" id="' + prefix + 'Price" placeholder="Цена"></div>' +
+          '<input type="text" class="service-price-input" id="' + getPriceInputId(prefix) + '" placeholder="Цена"></div>' +
         '<div class="modal-field"><label>Комментарий</label>' +
-          '<textarea class="service-comment-input" id="' + prefix + 'Comment" placeholder="Комментарий к записи" rows="3"></textarea></div>' +
+          '<textarea class="service-comment-input" id="' + getCommentInputId(prefix) + '" placeholder="Комментарий к записи" rows="3"></textarea></div>' +
         '<div class="modal-field appointment-images-field"><label>Фото</label>' +
           '<input type="file" class="service-image-input" id="' + prefix + 'ImageInput" accept="image/*" multiple hidden>' +
           '<div class="appointment-images-actions">' +
@@ -2925,22 +2972,28 @@
           '<div class="appointment-images-preview service-images-preview" id="' + prefix + 'ImagesPreview"></div></div>';
 
       block.querySelector('.service-block-remove').addEventListener('click', function() {
-        removePatientServiceBlock(blockId);
+        removeServiceBlock(modal, blockId);
       });
 
       if (!imageState[prefix]) {
         imageState[prefix] = { pending: [], existing: [], removed: [] };
       }
-      buildDentalChart(getDentalChartId(prefix), prefix);
+      var chartEl = block.querySelector('.dental-chart');
+      buildDentalChart(chartEl, prefix);
       setupImageUploadForPrefix(prefix);
-      nextPatientServiceBlockId = Math.max(nextPatientServiceBlockId, parseInt(blockId, 10) + 1);
+      if (modal === 'edit') {
+        nextEditServiceBlockId = Math.max(nextEditServiceBlockId, parseInt(blockId, 10) + 1);
+      } else {
+        nextPatientServiceBlockId = Math.max(nextPatientServiceBlockId, parseInt(blockId, 10) + 1);
+      }
       return block;
     }
 
-    function removePatientServiceBlock(blockId) {
+    function removeServiceBlock(modal, blockId) {
       if (String(blockId) === '0') return;
-      var prefix = getBlockPrefix(blockId);
-      var block = document.querySelector('#patientServiceBlocks .service-block[data-block-id="' + blockId + '"]');
+      var prefix = getBlockPrefix(blockId, modal);
+      var containerId = getServiceBlocksContainerId(modal);
+      var block = document.querySelector('#' + containerId + ' .service-block[data-block-id="' + blockId + '"]');
       if (!block) return;
       if (imageState[prefix]) {
         imageState[prefix].pending.forEach(function(item) {
@@ -2950,41 +3003,55 @@
       }
       if (toothSelection[prefix] !== undefined) delete toothSelection[prefix];
       block.remove();
-      document.querySelectorAll('#patientServiceBlocks .service-block').forEach(function(el, idx) {
+      document.querySelectorAll('#' + containerId + ' .service-block').forEach(function(el, idx) {
         el.querySelector('.service-block-title').textContent = 'Услуга ' + (idx + 1);
       });
     }
 
-    function resetPatientServiceBlocks() {
-      var container = document.getElementById('patientServiceBlocks');
+    function resetServiceBlocks(modal) {
+      var container = document.getElementById(getServiceBlocksContainerId(modal));
       if (!container) return;
       container.querySelectorAll('.service-block').forEach(function(el) {
-        if (el.dataset.blockId !== '0') removePatientServiceBlock(el.dataset.blockId);
+        if (el.dataset.blockId !== '0') removeServiceBlock(modal, el.dataset.blockId);
       });
-      resetServiceFields('patient');
-      setToothSelection('patient', '');
-      var priceEl = document.getElementById('patientPrice');
-      var commentEl = document.getElementById('patientComment');
+      var prefix0 = getBlockPrefix(0, modal);
+      resetServiceFields(prefix0);
+      setToothSelection(prefix0, '');
+      var priceEl = document.getElementById(getPriceInputId(prefix0));
+      var commentEl = document.getElementById(getCommentInputId(prefix0));
       if (priceEl) priceEl.value = '';
       if (commentEl) commentEl.value = '';
-      resetImageField('patient');
-      nextPatientServiceBlockId = 1;
+      resetImageField(prefix0);
+      if (modal === 'edit') {
+        nextEditServiceBlockId = 1;
+      } else {
+        nextPatientServiceBlockId = 1;
+      }
     }
 
-    function collectPatientServicesForSave() {
-      var blocks = document.querySelectorAll('#patientServiceBlocks .service-block');
+    function resetPatientServiceBlocks() {
+      resetServiceBlocks('patient');
+    }
+
+    function resetEditServiceBlocks() {
+      resetServiceBlocks('edit');
+    }
+
+    function collectServicesForSave(modal) {
+      var containerId = getServiceBlocksContainerId(modal);
+      var blocks = document.querySelectorAll('#' + containerId + ' .service-block');
       var list = [];
       for (var i = 0; i < blocks.length; i++) {
         var blockId = blocks[i].dataset.blockId;
-        var prefix = getBlockPrefix(blockId);
+        var prefix = getBlockPrefix(blockId, modal);
         if (!validateServiceSelection(prefix)) {
           var mainEl = document.getElementById(prefix + 'ServiceMain');
           var mainVal = mainEl ? mainEl.value : '';
           alert('Выберите тип для «' + mainVal + '» (услуга ' + (i + 1) + ')');
           return null;
         }
-        var priceEl = document.getElementById(prefix + 'Price');
-        var commentEl = document.getElementById(prefix + 'Comment');
+        var priceEl = document.getElementById(getPriceInputId(prefix));
+        var commentEl = document.getElementById(getCommentInputId(prefix));
         list.push({
           service: getServiceValue(prefix),
           tooth: getToothSelection(prefix),
@@ -2995,6 +3062,31 @@
         });
       }
       return list;
+    }
+
+    function collectPatientServicesForSave() {
+      return collectServicesForSave('patient');
+    }
+
+    function collectEditServicesForSave() {
+      return collectServicesForSave('edit');
+    }
+
+    async function resolveServiceImages(prefix, appointmentId, dateStr, subFolder) {
+      var state = imageState[prefix];
+      if (!state) return [];
+      var urls = (state.existing || []).filter(function(u) {
+        return state.removed.indexOf(u) === -1;
+      });
+      for (var r = 0; r < state.removed.length; r++) {
+        await deleteStorageImageByUrl(state.removed[r]);
+      }
+      if (state.pending.length) {
+        var files = state.pending.map(function(p) { return p.file; });
+        var uploaded = await uploadAppointmentImages(files, appointmentId, dateStr, subFolder);
+        urls = urls.concat(uploaded);
+      }
+      return urls;
     }
 
     async function renderReports() {
@@ -3377,7 +3469,7 @@
             var svcLabel = visitSvcs.length > 1 ? 'Услуга ' + (si + 1) + ': ' : 'Услуга: ';
             html += '<div class="service">' + svcLabel + (s.service || '—') + '</div>';
             if (s.tooth) html += '<div style="margin-top:4px;color:var(--text-muted);">Зуб: ' + s.tooth + '</div>';
-            if (s.price) html += '<div style="margin-top:4px;color:var(--text-muted);">Цена: ' + s.price + '</div>';
+            if (s.price) html += '<div style="margin-top:4px;color:var(--text-muted);">' + formatHistoryPriceLine(s.price, a) + '</div>';
             if (s.comment) html += '<div class="comment" style="margin-top:4px;color:var(--text-muted);">Комментарий: ' + s.comment + '</div>';
             if (Array.isArray(s.images) && s.images.length) {
               html += '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">' +
@@ -4008,9 +4100,25 @@
 
     document.getElementById('patientAddServiceBtn').addEventListener('click', function() {
       var container = document.getElementById('patientServiceBlocks');
-      var block = createPatientServiceBlock(nextPatientServiceBlockId);
+      var block = createServiceBlock('patient', nextPatientServiceBlockId);
       container.appendChild(block);
     });
+
+    document.getElementById('editAddServiceBtn').addEventListener('click', function() {
+      var container = document.getElementById('editServiceBlocks');
+      var block = createServiceBlock('edit', nextEditServiceBlockId);
+      container.appendChild(block);
+    });
+
+    var editServiceBlocksEl = document.getElementById('editServiceBlocks');
+    if (editServiceBlocksEl) {
+      editServiceBlocksEl.addEventListener('change', function(e) {
+        if (e.target && e.target.id && e.target.id.indexOf('ServiceMain') !== -1) {
+          var prefix = e.target.id.replace('ServiceMain', '');
+          toggleServiceSubField(prefix);
+        }
+      });
+    }
 
     setupImageUploadForPrefix('patient');
 
@@ -4275,24 +4383,38 @@
     function openEditAppointmentModal(appt) {
       editingAppointment = appt;
       var svcs = getAppointmentServices(appt);
-      var firstSvc = svcs[0] || {};
       document.getElementById('editPatientName').value = appt.name || '';
       document.getElementById('editPatientPhone').value = appt.phone || '';
-      setServiceFromString('edit', firstSvc.service || appt.service || '');
-      document.getElementById('editPatientPrice').value = firstSvc.price || appt.price || '';
-      document.getElementById('editPatientComment').value = firstSvc.comment || appt.comment || '';
-      setToothSelection('edit', firstSvc.tooth || appt.tooth || '');
+      resetEditServiceBlocks();
+      var container = document.getElementById('editServiceBlocks');
+      for (var i = 0; i < svcs.length; i++) {
+        if (i > 0) {
+          container.appendChild(createServiceBlock('edit', i));
+        }
+        var prefix = getBlockPrefix(i, 'edit');
+        var svc = svcs[i];
+        setServiceFromString(prefix, svc.service || (i === 0 ? appt.service : '') || '');
+        var priceEl = document.getElementById(getPriceInputId(prefix));
+        var commentEl = document.getElementById(getCommentInputId(prefix));
+        if (priceEl) priceEl.value = svc.price || (i === 0 ? appt.price : '') || '';
+        if (commentEl) commentEl.value = svc.comment || (i === 0 ? appt.comment : '') || '';
+        setToothSelection(prefix, svc.tooth || (i === 0 ? appt.tooth : '') || '');
+        if (!imageState[prefix]) {
+          imageState[prefix] = { pending: [], existing: [], removed: [] };
+        }
+        imageState[prefix].pending = [];
+        imageState[prefix].removed = [];
+        var svcImages = svc.images && svc.images.length ? svc.images : (i === 0 && Array.isArray(appt.images) ? appt.images : []);
+        imageState[prefix].existing = Array.isArray(svcImages) ? svcImages.slice() : [];
+        renderImagePreview(prefix);
+      }
       setPaymentField('edit', !!appt.paid, appt.paymentMethod || '');
-      imageState.edit.pending = [];
-      imageState.edit.removed = [];
-      var editImages = firstSvc.images && firstSvc.images.length ? firstSvc.images : (appt.images || []);
-      imageState.edit.existing = Array.isArray(editImages) ? editImages.slice() : [];
-      renderImagePreview('edit');
       document.getElementById('editAppointmentModal').classList.add('open');
     }
 
     function closeEditAppointmentModal() {
       document.getElementById('editAppointmentModal').classList.remove('open');
+      resetEditServiceBlocks();
       editingAppointment = null;
     }
 
@@ -4343,18 +4465,29 @@
           return;
         }
         var d = editingAppointment.date;
-        if (!validateServiceSelection('edit')) return;
-        var editService = getServiceValue('edit');
+        var servicesList = collectEditServicesForSave();
+        if (!servicesList) return;
         var editPayment = getPaymentData('edit');
+        var servicesPayload = servicesList.map(function(s) {
+          return {
+            service: s.service,
+            tooth: s.tooth,
+            price: s.price,
+            comment: s.comment,
+            images: []
+          };
+        });
+        var first = servicesPayload[0] || {};
         var updateData = {
           name: name,
           phone: document.getElementById('editPatientPhone').value.trim(),
-          service: editService,
-          price: document.getElementById('editPatientPrice').value.trim(),
+          service: servicesPayload.map(function(s) { return s.service; }).filter(Boolean).join('; '),
+          price: servicesPayload.map(function(s) { return s.price; }).filter(Boolean).join(' + '),
           paid: editPayment.paid,
           paymentMethod: editPayment.paymentMethod,
-          comment: document.getElementById('editPatientComment').value.trim(),
-          tooth: getToothSelection('edit'),
+          comment: servicesPayload.map(function(s) { return s.comment; }).filter(Boolean).join('\n'),
+          tooth: first.tooth || '',
+          services: servicesPayload,
           time: editingAppointment.time,
           doctor: editingAppointment.doctor
         };
@@ -4365,9 +4498,19 @@
         editSaveBtn.disabled = true;
         try {
           var editDateStr = d && d.year !== undefined ? dateToStr(d) : dateToStr(selectedDate);
-          updateData.images = await resolveAppointmentImages('edit', apptId, editDateStr);
+          var finalServices = servicesPayload.slice();
+          var allImages = [];
+          for (var esi = 0; esi < servicesList.length; esi++) {
+            var epfx = servicesList[esi]._prefix;
+            var eurls = await resolveServiceImages(epfx, apptId, editDateStr, 'service_' + esi);
+            finalServices[esi].images = eurls;
+            allImages = allImages.concat(eurls);
+          }
+          updateData.services = finalServices;
+          updateData.images = allImages;
           await updateAppointment(apptId, updateData);
-          resetImageField('edit');
+          servicesList.forEach(function(s) { resetImageField(s._prefix); });
+          resetEditServiceBlocks();
           await loadAppointments(dateToStr(selectedDate));
           await generateSchedule();
           updateAppointmentsList();
