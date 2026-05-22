@@ -2980,5 +2980,24 @@
       }
     })();
   </script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB45bc1AXFP8k9Jv1ccH8OrpGFbSsWw5tI",
+    authDomain: "bkclinic-2d141.firebaseapp.com",
+    projectId: "bkclinic-2d141",
+    storageBucket: "bkclinic-2d141.firebasestorage.app",
+    messagingSenderId: "798161083323",
+    appId: "1:798161083323:web:3c6febe6e603329f57c29e",
+    measurementId: "G-603S33C8K0"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const analytics = getAnalytics(app);
+
+  console.log("Firebase connected");
+</script>
 </body>
 </html>
