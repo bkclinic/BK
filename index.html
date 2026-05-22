@@ -1470,9 +1470,170 @@
         width: 300px;
       }
     }
+
+    /* Login */
+    #loginScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f0fdfa 0%, var(--surface-2) 50%, #ecfeff 100%);
+      padding: 24px;
+    }
+
+    #loginScreen.visible {
+      display: flex;
+    }
+
+    .login-card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      padding: 40px 36px;
+    }
+
+    .login-logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      text-align: center;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .login-subtitle {
+      text-align: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      margin-bottom: 28px;
+    }
+
+    .login-field {
+      margin-bottom: 18px;
+    }
+
+    .login-field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .login-field input {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    .login-field input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
+    }
+
+    .login-error {
+      color: #dc2626;
+      font-size: 13px;
+      margin-bottom: 14px;
+      display: none;
+      text-align: center;
+    }
+
+    .login-error.show {
+      display: block;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s;
+    }
+
+    .login-btn:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+
+    .login-btn:disabled {
+      opacity: 0.7;
+      cursor: not-allowed;
+    }
+
+    .header-logout {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.2s;
+    }
+
+    .header-logout:hover {
+      background: var(--surface-3);
+      color: var(--text);
+    }
+
+    .header-user {
+      font-size: 13px;
+      color: var(--text-muted);
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    #appRoot {
+      display: none;
+      contents: none;
+    }
+
+    #appRoot.authenticated {
+      display: contents;
+    }
   </style>
 </head>
 <body>
+  <!-- Login -->
+  <div id="loginScreen" class="visible">
+    <div class="login-card">
+      <div class="login-logo">BK CLINIC</div>
+      <div class="login-subtitle">Войдите для доступа к расписанию</div>
+      <div class="login-error" id="loginError"></div>
+      <form id="loginForm">
+        <div class="login-field">
+          <label for="loginEmail">Email</label>
+          <input type="email" id="loginEmail" autocomplete="username" required placeholder="admin@clinic.kz">
+        </div>
+        <div class="login-field">
+          <label for="loginPassword">Пароль</label>
+          <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="login-btn" id="loginSubmit">Войти</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="appRoot">
   <!-- Header -->
   <div class="header">
     <button type="button" class="hamburger" id="sidebarToggle" aria-label="Меню">
@@ -1484,6 +1645,8 @@
       <div class="logo-text">BK CLINIC</div>
     </div>
     <div class="header-icons">
+      <span class="header-user" id="headerUserEmail" title=""></span>
+      <button type="button" class="header-logout" id="logoutBtn">Выйти</button>
     </div>
   </div>
 
@@ -1673,6 +1836,7 @@
       </div>
     </div>
   </div>
+  </div><!-- /appRoot -->
 
   <!-- Попап: запись пациента -->
   <div class="modal-overlay" id="patientModal">
@@ -1755,6 +1919,10 @@
     <button type="button" class="undo-notification-btn" id="undoButton">Вернуть</button>
   </div>
 
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="firebase-config.js"></script>
   <script>
     // Real calendar — current date and navigation
     const MONTH_NAMES = ['Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь', 'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'];
@@ -1772,59 +1940,104 @@
     let scheduleTimes = [];
     let lastClickedCell = null;
 
-    // API helper functions
-    async function apiGet(url) {
-      const res = await fetch(url);
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+    const DEFAULT_DOCTORS = [
+      { name: 'Латип Азат', spec: 'Хирург' },
+      { name: 'Есіркепұлы Естай', spec: 'Терапевт' },
+      { name: 'Турсынбаев Фатхулло', spec: 'Терапевт' },
+      { name: 'Халидов Камран', spec: 'Терапевт' },
+      { name: 'Мамедов Карим', spec: 'Терапевт' },
+      { name: 'Рыскул Мерей', spec: 'Терапевт' },
+      { name: 'Байбатчаев Заңғар', spec: 'Ортодонт' },
+      { name: 'Тлен Адиль', spec: 'Ортопед' },
+      { name: 'Адамбек Ақтөре', spec: 'Практикант' },
+      { name: 'Темірбек Нұрбақыт', spec: 'Практикант' }
+    ];
+
+    let db = null;
+    let auth = null;
+    let appInitialized = false;
+
+    function initFirebase() {
+      if (!window.FIREBASE_CONFIG || !window.FIREBASE_CONFIG.apiKey || window.FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') {
+        throw new Error('Настройте firebase-config.js (Firebase Console → параметры проекта)');
+      }
+      if (!firebase.apps.length) {
+        firebase.initializeApp(window.FIREBASE_CONFIG);
+      }
+      db = firebase.firestore();
+      auth = firebase.auth();
     }
 
-    async function apiPost(url, data) {
-      const res = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+    function normalizeDate(d) {
+      if (!d || typeof d !== 'object') return null;
+      return {
+        year: Number(d.year),
+        month: Number(d.month),
+        date: Number(d.date)
+      };
     }
 
-    async function apiPut(url, data) {
-      const res = await fetch(url, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+    function appointmentFromDoc(doc) {
+      const data = doc.data() || {};
+      return {
+        ...data,
+        id: doc.id,
+        date: normalizeDate(data.date),
+        doctor: data.doctor != null ? Number(data.doctor) : 0
+      };
     }
 
-    async function apiDelete(url) {
-      const res = await fetch(url, { method: 'DELETE' });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      return await res.json();
+    function buildAppointmentData(data) {
+      const date = normalizeDate(data.date);
+      const payload = {
+        name: data.name || '',
+        phone: data.phone || '',
+        service: data.service || '',
+        price: data.price || '',
+        time: data.time || '',
+        doctor: Number(data.doctor),
+        date: date,
+        dateStr: date ? dateToStr(date) : '',
+        came: !!data.came,
+        paid: !!data.paid,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+      };
+      return payload;
+    }
+
+    async function createAppointment(data) {
+      const payload = buildAppointmentData(data);
+      payload.createdAt = firebase.firestore.FieldValue.serverTimestamp();
+      const ref = await db.collection('appointments').add(payload);
+      return { id: ref.id, ...payload, date: normalizeDate(payload.date) };
+    }
+
+    async function updateAppointment(id, data) {
+      const payload = buildAppointmentData(data);
+      await db.collection('appointments').doc(id).update(payload);
+      return { id: id, ...payload, date: normalizeDate(payload.date) };
+    }
+
+    async function deleteAppointment(id) {
+      await db.collection('appointments').doc(id).delete();
+      return { ok: true };
     }
 
     async function loadDoctors() {
       try {
-        const doctors = await apiGet('/api/doctors');
-        DOCTORS = doctors.map(d => ({ name: d.name, spec: d.specialization || '' }));
+        const snap = await db.collection('settings').doc('clinic').get();
+        if (snap.exists && Array.isArray(snap.data().doctors) && snap.data().doctors.length > 0) {
+          DOCTORS = snap.data().doctors.map(function(d) {
+            return { name: d.name, spec: d.spec || d.specialization || '' };
+          });
+        } else {
+          DOCTORS = DEFAULT_DOCTORS.slice();
+          await db.collection('settings').doc('clinic').set({ doctors: DOCTORS }, { merge: true });
+        }
         updateDoctorsInUI();
       } catch (err) {
         console.error('Failed to load doctors:', err);
-        // Fallback to default doctors
-        DOCTORS = [
-          { name: 'Латип Азат', spec: 'Хирург' },
-          { name: 'Есіркепұлы Естай', spec: 'Терапевт' },
-          { name: 'Турсынбаев Фатхулло', spec: 'Терапевт' },
-          { name: 'Халидов Камран', spec: 'Терапевт' },
-          { name: 'Мамедов Карим', spec: 'Терапевт' },
-          { name: 'Рыскул Мерей', spec: 'Терапевт' },
-          { name: 'Байбатчаев Заңғар', spec: 'Ортодонт' },
-          { name: 'Тлен Адиль', spec: 'Ортопед' },
-          { name: 'Адамбек Ақтөре', spec: 'Практикант' },
-          { name: 'Темірбек Нұрбақыт', spec: 'Практикант' }
-        ];
+        DOCTORS = DEFAULT_DOCTORS.slice();
         updateDoctorsInUI();
       }
     }
@@ -1857,13 +2070,12 @@
 
     async function loadAppointments(dateStr) {
       try {
-        const url = dateStr ? `/api/appointments?date=${dateStr}` : '/api/appointments';
-        const data = await apiGet(url);
-        // Normalize IDs with fallback
-        appointments = (data || []).map(a => ({
-          ...a,
-          id: a.id ?? a._id ?? a.appointmentId ?? a.ID
-        }));
+        let query = db.collection('appointments');
+        if (dateStr) {
+          query = query.where('dateStr', '==', dateStr);
+        }
+        const snap = await query.get();
+        appointments = snap.docs.map(appointmentFromDoc);
         return appointments;
       } catch (err) {
         console.error('Failed to load appointments:', err);
@@ -1874,12 +2086,11 @@
 
     async function loadAppointmentsInRange(fromDateStr, toDateStr) {
       try {
-        const url = `/api/appointments?from_date=${fromDateStr}&to_date=${toDateStr}`;
-        const data = await apiGet(url);
-        return (data || []).map(a => ({
-          ...a,
-          id: a.id ?? a._id ?? a.appointmentId ?? a.ID
-        }));
+        const snap = await db.collection('appointments')
+          .where('dateStr', '>=', fromDateStr)
+          .where('dateStr', '<=', toDateStr)
+          .get();
+        return snap.docs.map(appointmentFromDoc);
       } catch (err) {
         console.error('Failed to load appointments in range:', err);
         return [];
@@ -2458,11 +2669,112 @@
       updateDateDisplays().catch(err => console.error('Error updating date displays:', err));
     });
 
-    initCalendarState();
-    generateCalendar();
-    loadDoctors().then(() => {
-      updateDateDisplays().catch(err => console.error('Error updating date displays:', err));
-    }).catch(err => console.error('Error loading doctors:', err));
+    function showLoginScreen() {
+      document.getElementById('loginScreen').classList.add('visible');
+      document.getElementById('appRoot').classList.remove('authenticated');
+    }
+
+    function showAppScreen(user) {
+      document.getElementById('loginScreen').classList.remove('visible');
+      document.getElementById('appRoot').classList.add('authenticated');
+      var emailEl = document.getElementById('headerUserEmail');
+      if (emailEl && user) {
+        emailEl.textContent = user.email || '';
+        emailEl.title = user.email || '';
+      }
+    }
+
+    function showLoginError(msg) {
+      var el = document.getElementById('loginError');
+      if (!msg) {
+        el.textContent = '';
+        el.classList.remove('show');
+        return;
+      }
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function authErrorMessage(err) {
+      const code = err && err.code ? err.code : '';
+      const map = {
+        'auth/invalid-email': 'Неверный email',
+        'auth/user-disabled': 'Аккаунт отключён',
+        'auth/user-not-found': 'Пользователь не найден',
+        'auth/wrong-password': 'Неверный пароль',
+        'auth/invalid-credential': 'Неверный email или пароль',
+        'auth/too-many-requests': 'Слишком много попыток. Попробуйте позже'
+      };
+      return map[code] || (err && err.message) || 'Ошибка входа';
+    }
+
+    async function startApp() {
+      initCalendarState();
+      generateCalendar();
+      await loadDoctors();
+      await updateDateDisplays();
+    }
+
+    async function onUserSignedIn(user) {
+      showAppScreen(user);
+      showLoginError('');
+      if (!appInitialized) {
+        appInitialized = true;
+        await startApp();
+      } else {
+        await loadDoctors();
+        await updateDateDisplays();
+      }
+    }
+
+    function setupAuth() {
+      initFirebase();
+
+      document.getElementById('loginForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value;
+        const btn = document.getElementById('loginSubmit');
+        showLoginError('');
+        btn.disabled = true;
+        try {
+          await auth.signInWithEmailAndPassword(email, password);
+        } catch (err) {
+          console.error('Login failed:', err);
+          showLoginError(authErrorMessage(err));
+        } finally {
+          btn.disabled = false;
+        }
+      });
+
+      document.getElementById('logoutBtn').addEventListener('click', function() {
+        auth.signOut().catch(function(err) {
+          console.error('Logout failed:', err);
+        });
+      });
+
+      auth.onAuthStateChanged(async function(user) {
+        if (user) {
+          try {
+            await onUserSignedIn(user);
+          } catch (err) {
+            console.error('App init failed:', err);
+            showLoginScreen();
+            showLoginError('Ошибка загрузки данных. Проверьте Firestore и правила доступа.');
+          }
+        } else {
+          appInitialized = false;
+          showLoginScreen();
+        }
+      });
+    }
+
+    try {
+      setupAuth();
+    } catch (err) {
+      console.error(err);
+      showLoginError(err.message || 'Ошибка инициализации Firebase');
+    }
 
     // Schedule grid generation
     async function generateSchedule() {
@@ -2585,7 +2897,16 @@
                 }
                 
                 // Update appointment
-                await apiPut(`/api/appointments/${appointmentId}`, {
+                const moved = appointments.find(function(a) { return a.id === appointmentId; });
+                if (!moved) throw new Error('Appointment not found');
+                await updateAppointment(appointmentId, {
+                  name: moved.name,
+                  phone: moved.phone,
+                  service: moved.service,
+                  price: moved.price,
+                  paid: moved.paid,
+                  came: moved.came,
+                  date: moved.date,
                   time: newTime,
                   doctor: newDoctor
                 });
@@ -2759,7 +3080,7 @@
       var paid = document.getElementById('patientPaid').checked;
       try {
         for (var ti = 0; ti < timesToSave.length; ti++) {
-          await apiPost('/api/appointments', {
+          await createAppointment({
             name: name,
             phone: phone,
             service: service,
@@ -2840,7 +3161,7 @@
         }
         const deletedAppointment = JSON.parse(JSON.stringify(editingAppointment));
         try {
-          await apiDelete(`/api/appointments/${apptId}`);
+          await deleteAppointment(apptId);
           await loadAppointments(dateToStr(selectedDate));
           closeEditAppointmentModal();
           await generateSchedule();
@@ -2880,7 +3201,7 @@
           updateData.date = { year: d.year, month: d.month, date: d.date };
         }
         try {
-          await apiPut(`/api/appointments/${apptId}`, updateData);
+          await updateAppointment(apptId, updateData);
           await loadAppointments(dateToStr(selectedDate));
           await generateSchedule();
           updateAppointmentsList();
@@ -2942,7 +3263,7 @@
       
       try {
         // Restore appointment
-        const restored = await apiPost('/api/appointments', {
+        await createAppointment({
           name: deletedAppointmentData.name,
           phone: deletedAppointmentData.phone,
           service: deletedAppointmentData.service,
@@ -2980,24 +3301,5 @@
       }
     })();
   </script>
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-analytics.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyB45bc1AXFP8k9Jv1ccH8OrpGFbSsWw5tI",
-    authDomain: "bkclinic-2d141.firebaseapp.com",
-    projectId: "bkclinic-2d141",
-    storageBucket: "bkclinic-2d141.firebasestorage.app",
-    messagingSenderId: "798161083323",
-    appId: "1:798161083323:web:3c6febe6e603329f57c29e",
-    measurementId: "G-603S33C8K0"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-
-  console.log("Firebase connected");
-</script>
 </body>
 </html>
