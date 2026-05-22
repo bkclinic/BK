@@ -1387,7 +1387,7 @@
       background: #dc2626;
     }
 
-    /* Dental chart FDI */
+    /* Dental chart FDI — как на стоматологической схеме */
     .dental-chart-field label {
       display: flex;
       align-items: center;
@@ -1403,87 +1403,132 @@
 
     .dental-chart {
       margin-top: 8px;
-      padding: 16px 12px;
-      background: var(--surface-3);
-      border: 1px solid var(--border);
+      padding: 12px;
+      background: #fff;
+      border: 1px solid #c5cdd8;
       border-radius: var(--radius);
       overflow-x: auto;
     }
 
-    .dental-jaw {
-      display: flex;
-      align-items: flex-end;
-      justify-content: center;
-      gap: 0;
+    .dental-chart-table {
+      border-collapse: collapse;
+      margin: 0 auto;
+      min-width: 100%;
     }
 
-    .dental-jaw-upper {
-      padding-bottom: 8px;
-      margin-bottom: 4px;
-      border-bottom: 2px solid var(--border);
-    }
-
-    .dental-jaw-lower {
-      padding-top: 8px;
-      margin-top: 4px;
-      align-items: flex-start;
-    }
-
-    .dental-quadrant {
-      display: flex;
-      gap: 4px;
-    }
-
-    .dental-quadrant-right {
-      flex-direction: row;
-    }
-
-    .dental-quadrant-left {
-      flex-direction: row;
-    }
-
-    .dental-midline {
-      width: 14px;
-      flex-shrink: 0;
-    }
-
-    .dental-tooth {
-      width: 34px;
-      min-width: 34px;
-      height: 48px;
+    .dental-chart-table td {
       padding: 0;
-      border: 2px solid #cbd5e1;
-      background: var(--surface);
-      color: var(--text);
-      font-size: 12px;
-      font-weight: 600;
-      font-family: inherit;
+      vertical-align: middle;
+      border: 1px solid #c5cdd8;
+    }
+
+    .dental-chart-table tr.dental-row-upper td {
+      border-bottom: 2px solid #94a3b8;
+    }
+
+    .dental-chart-table td.dental-midline-gap {
+      border-left: 2px solid #94a3b8;
+      border-right: none;
+      width: 4px;
+      min-width: 4px;
+      padding: 0;
+      background: #fff;
+      border-top: 1px solid #c5cdd8;
+      border-bottom: 2px solid #94a3b8;
+    }
+
+    .dental-chart-table tr.dental-row-lower td.dental-midline-gap {
+      border-bottom: 1px solid #c5cdd8;
+      border-top: none;
+    }
+
+    .dental-cell {
+      width: 100%;
+      min-width: 42px;
+      height: 72px;
+      padding: 4px 2px;
+      border: none;
+      background: #fff;
       cursor: pointer;
-      transition: all 0.15s ease;
+      font-family: inherit;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      transition: background 0.15s, color 0.15s;
+      box-sizing: border-box;
+    }
+
+    .dental-cell-upper {
+      flex-direction: column;
+      justify-content: flex-end;
+      padding-bottom: 2px;
+    }
+
+    .dental-cell-lower {
+      flex-direction: column;
+      justify-content: flex-start;
+      padding-top: 2px;
+    }
+
+    .dental-cell:hover:not(.selected) {
+      background: #f0fdfa;
+    }
+
+    .dental-cell.selected {
+      background: #2563eb;
+    }
+
+    .dental-cell.selected .dental-num {
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .dental-cell.selected .dental-shape svg {
+      fill: #fff;
+      stroke: #fff;
+    }
+
+    .dental-shape {
+      flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
+      width: 100%;
+      min-height: 38px;
+      padding: 2px 4px;
+    }
+
+    .dental-shape svg {
+      width: 100%;
+      max-width: 36px;
+      height: auto;
+      max-height: 40px;
+      fill: #f8fafc;
+      stroke: #64748b;
+      stroke-width: 1.2;
+      transition: fill 0.15s, stroke 0.15s;
+    }
+
+    .dental-cell-upper .dental-shape svg {
+      transform: rotate(180deg);
+    }
+
+    .dental-num {
+      font-size: 11px;
+      font-weight: 600;
+      color: #334155;
       line-height: 1;
-      /* tooth crown shape */
-      border-radius: 45% 45% 38% 38% / 55% 55% 32% 32%;
-      box-shadow: inset 0 -2px 0 rgba(0,0,0,0.04);
+      flex-shrink: 0;
+      padding: 2px 0;
     }
 
-    .dental-jaw-upper .dental-tooth {
-      border-radius: 38% 38% 45% 45% / 32% 32% 55% 55%;
-      box-shadow: inset 0 2px 0 rgba(0,0,0,0.04);
+    .dental-cell-upper .dental-num {
+      margin-top: 0;
     }
 
-    .dental-tooth:hover:not(.selected) {
-      border-color: var(--primary);
-      background: var(--primary-light);
-    }
-
-    .dental-tooth.selected {
-      background: var(--primary);
-      border-color: var(--primary-hover);
-      color: #fff;
-      box-shadow: 0 2px 8px rgba(13, 148, 136, 0.35);
+    .dental-cell-lower .dental-num {
+      margin-bottom: 0;
     }
 
     .dental-chart-hint {
@@ -2582,26 +2627,68 @@
 
     const toothSelection = { patient: '', edit: '' };
 
-    function buildQuadrantTeeth(numbers, prefix, jawClass) {
-      var quad = document.createElement('div');
-      quad.className = 'dental-quadrant';
-      numbers.forEach(function(num) {
-        var btn = document.createElement('button');
-        btn.type = 'button';
-        btn.className = 'dental-tooth ' + jawClass;
-        btn.dataset.tooth = String(num);
-        btn.textContent = String(num);
-        btn.title = 'Зуб ' + num;
-        btn.addEventListener('click', function() {
-          if (toothSelection[prefix] === String(num)) {
-            setToothSelection(prefix, '');
-          } else {
-            setToothSelection(prefix, String(num));
-          }
-        });
-        quad.appendChild(btn);
+    function getToothShapeType(num) {
+      var n = parseInt(num, 10) % 10;
+      if (n >= 6) return 'molar';
+      if (n >= 4) return 'premolar';
+      if (n === 3) return 'canine';
+      return 'incisor';
+    }
+
+    function getToothSvgMarkup(type) {
+      var paths = {
+        molar: '<path d="M3 6c0-3 4-5 9-5s9 2 9 5v2c1 0 2 2 2 5v8c0 2-4 4-11 4S1 23 1 21v-8c0-3 1-5 2-5V6z"/><path d="M7 8h4M13 8h4" fill="none" stroke-width="1"/>',
+        premolar: '<path d="M6 5c0-2.5 3-4 6-4s6 1.5 6 4v3c.8 0 1.5 1.5 1.5 4v10c0 1.8-3 3.5-7.5 3.5S4.5 23.8 4.5 22v-10c0-2.5.7-4 1.5-4V5z"/>',
+        canine: '<path d="M12 3C8 3 6 7 6 11v9c0 2 2.5 4 6 4s6-2 6-4v-9c0-4-2-8-6-8z"/>',
+        incisor: '<path d="M8 4c0-2 2-3.5 4-3.5s4 1.5 4 3.5v4c.5 0 1 2 1 4.5v9.5c0 1.5-2 2.5-5 2.5s-5-1-5-2.5V12.5c0-2.5.5-4.5 1-4.5V4z"/>'
+      };
+      return '<svg viewBox="0 0 24 28" xmlns="http://www.w3.org/2000/svg">' + (paths[type] || paths.premolar) + '</svg>';
+    }
+
+    function createDentalCell(num, prefix, jaw) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'dental-cell dental-cell-' + jaw;
+      btn.dataset.tooth = String(num);
+      btn.title = 'Зуб ' + num;
+
+      var shapeWrap = document.createElement('span');
+      shapeWrap.className = 'dental-shape';
+      shapeWrap.innerHTML = getToothSvgMarkup(getToothShapeType(num));
+
+      var numEl = document.createElement('span');
+      numEl.className = 'dental-num';
+      numEl.textContent = String(num);
+
+      if (jaw === 'upper') {
+        btn.appendChild(shapeWrap);
+        btn.appendChild(numEl);
+      } else {
+        btn.appendChild(numEl);
+        btn.appendChild(shapeWrap);
+      }
+
+      btn.addEventListener('click', function() {
+        if (toothSelection[prefix] === String(num)) {
+          setToothSelection(prefix, '');
+        } else {
+          setToothSelection(prefix, String(num));
+        }
       });
-      return quad;
+      return btn;
+    }
+
+    function appendTeethToRow(row, numbers, prefix, jaw, midlineAfterIndex) {
+      numbers.forEach(function(num, idx) {
+        if (midlineAfterIndex >= 0 && idx === midlineAfterIndex) {
+          var gap = document.createElement('td');
+          gap.className = 'dental-midline-gap';
+          row.appendChild(gap);
+        }
+        var td = document.createElement('td');
+        td.appendChild(createDentalCell(num, prefix, jaw));
+        row.appendChild(td);
+      });
     }
 
     function buildDentalChart(containerId, prefix) {
@@ -2609,24 +2696,25 @@
       if (!container) return;
       container.innerHTML = '';
 
-      var upper = document.createElement('div');
-      upper.className = 'dental-jaw dental-jaw-upper';
-      upper.appendChild(buildQuadrantTeeth(DENTAL_UPPER_RIGHT, prefix, 'dental-tooth-upper'));
-      var midUpper = document.createElement('div');
-      midUpper.className = 'dental-midline';
-      upper.appendChild(midUpper);
-      upper.appendChild(buildQuadrantTeeth(DENTAL_UPPER_LEFT, prefix, 'dental-tooth-upper'));
+      var upperNums = DENTAL_UPPER_RIGHT.concat(DENTAL_UPPER_LEFT);
+      var lowerNums = DENTAL_LOWER_RIGHT.concat(DENTAL_LOWER_LEFT);
 
-      var lower = document.createElement('div');
-      lower.className = 'dental-jaw dental-jaw-lower';
-      lower.appendChild(buildQuadrantTeeth(DENTAL_LOWER_RIGHT, prefix, 'dental-tooth-lower'));
-      var midLower = document.createElement('div');
-      midLower.className = 'dental-midline';
-      lower.appendChild(midLower);
-      lower.appendChild(buildQuadrantTeeth(DENTAL_LOWER_LEFT, prefix, 'dental-tooth-lower'));
+      var table = document.createElement('table');
+      table.className = 'dental-chart-table';
+      table.setAttribute('role', 'grid');
+      table.setAttribute('aria-label', 'Схема зубов FDI');
 
-      container.appendChild(upper);
-      container.appendChild(lower);
+      var trUpper = document.createElement('tr');
+      trUpper.className = 'dental-row-upper';
+      appendTeethToRow(trUpper, upperNums, prefix, 'upper', 8);
+
+      var trLower = document.createElement('tr');
+      trLower.className = 'dental-row-lower';
+      appendTeethToRow(trLower, lowerNums, prefix, 'lower', 8);
+
+      table.appendChild(trUpper);
+      table.appendChild(trLower);
+      container.appendChild(table);
     }
 
     function setToothSelection(prefix, tooth) {
@@ -2635,7 +2723,7 @@
       var labelId = prefix === 'patient' ? 'patientToothLabel' : 'editToothLabel';
       var chart = document.getElementById(chartId);
       if (chart) {
-        chart.querySelectorAll('.dental-tooth').forEach(function(btn) {
+        chart.querySelectorAll('.dental-cell').forEach(function(btn) {
           btn.classList.toggle('selected', btn.dataset.tooth === toothSelection[prefix]);
         });
       }
