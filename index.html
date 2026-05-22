@@ -879,6 +879,81 @@
       font-weight: 600;
     }
 
+    .btn-add-appointment {
+      width: 100%;
+      margin-bottom: 16px;
+      padding: 12px 16px;
+      border: 1px dashed var(--primary);
+      border-radius: var(--radius-sm);
+      background: var(--primary-light);
+      color: var(--primary);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .btn-add-appointment:hover {
+      background: #ccfbf1;
+      border-color: var(--primary-hover);
+    }
+
+    .manual-slot-times {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+      padding: 4px 0;
+    }
+
+    .manual-slot-time-btn {
+      padding: 8px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      font-size: 14px;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .manual-slot-time-btn:hover {
+      border-color: var(--primary);
+    }
+
+    .manual-slot-time-btn.selected {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+    }
+
+    .manual-slot-time-btn.occupied {
+      opacity: 0.45;
+      cursor: not-allowed;
+      text-decoration: line-through;
+    }
+
+    .manual-slot-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .schedule-table td.occupied-cell {
+      background: var(--surface-2);
+    }
+
+    .appointment-block.spanning {
+      z-index: 2;
+      overflow: visible;
+    }
+
+    .schedule-table td:has(.appointment-block.spanning) {
+      overflow: visible;
+    }
+
     .date-icons {
       display: flex;
       gap: 10px;
@@ -2083,6 +2158,8 @@
             <div class="date-text" id="dateText">29 июль пятница</div>
           </div>
 
+          <button type="button" class="btn-add-appointment" id="manualAddAppointmentBtn">Добавить запись</button>
+
           <div class="appointments-filter">
           </div>
 
@@ -2196,6 +2273,28 @@
   </div>
   </div><!-- /appRoot -->
 
+  <!-- Попап: ручной выбор врача и времени -->
+  <div class="modal-overlay" id="manualAddModal">
+    <div class="modal-popup">
+      <div class="modal-header">Добавить запись</div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <label>Врач</label>
+          <select id="manualAddDoctor"></select>
+        </div>
+        <div class="modal-field">
+          <label>Время</label>
+          <div class="manual-slot-times" id="manualAddTimes"></div>
+          <div class="manual-slot-hint">Выберите один слот или диапазон: нажмите начало, затем конец интервала. Соседние слоты объединяются в одну запись.</div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="modal-btn modal-btn-cancel" id="manualAddCancel">Отмена</button>
+        <button type="button" class="modal-btn modal-btn-save" id="manualAddContinue">Продолжить</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Попап: запись пациента -->
   <div class="modal-overlay" id="patientModal">
     <div class="modal-popup modal-popup-large">
@@ -2242,6 +2341,10 @@
               <label>Цена</label>
               <input type="text" class="service-price-input" id="patientPrice" placeholder="Цена">
             </div>
+            <div class="modal-field payment-methods-field" id="patientPaymentSection">
+              <div class="payment-status-label" id="patientPaymentStatus">Ақша төленбеді</div>
+              <div class="payment-methods-grid" id="patientPaymentMethods"></div>
+            </div>
             <div class="modal-field">
               <label>Комментарий</label>
               <textarea class="service-comment-input" id="patientComment" placeholder="Комментарий к записи" rows="3"></textarea>
@@ -2256,10 +2359,6 @@
               <div class="appointment-images-preview service-images-preview" id="patientImagesPreview"></div>
             </div>
           </div>
-        </div>
-        <div class="modal-field payment-methods-field">
-          <div class="payment-status-label" id="patientPaymentStatus">Ақша төленбеді</div>
-          <div class="payment-methods-grid" id="patientPaymentMethods"></div>
         </div>
       </div>
       <div class="modal-footer modal-footer-patient">
@@ -2317,6 +2416,10 @@
               <label>Цена</label>
               <input type="text" class="service-price-input" id="editPatientPrice" placeholder="Цена">
             </div>
+            <div class="modal-field payment-methods-field" id="editPaymentSection">
+              <div class="payment-status-label" id="editPaymentStatus">Ақша төленбеді</div>
+              <div class="payment-methods-grid" id="editPaymentMethods"></div>
+            </div>
             <div class="modal-field">
               <label>Комментарий</label>
               <textarea class="service-comment-input" id="editPatientComment" placeholder="Комментарий к записи" rows="3"></textarea>
@@ -2331,10 +2434,6 @@
               <div class="appointment-images-preview service-images-preview" id="editImagesPreview"></div>
             </div>
           </div>
-        </div>
-        <div class="modal-field payment-methods-field">
-          <div class="payment-status-label" id="editPaymentStatus">Ақша төленбеді</div>
-          <div class="payment-methods-grid" id="editPaymentMethods"></div>
         </div>
       </div>
       <div class="modal-footer modal-footer-edit">
@@ -2443,6 +2542,9 @@
         service: data.service || '',
         price: data.price || '',
         time: data.time || '',
+        times: Array.isArray(data.times) && data.times.length
+          ? data.times.map(String)
+          : (data.time ? [String(data.time)] : []),
         doctor: Number(data.doctor),
         date: date,
         dateStr: date ? dateToStr(date) : '',
@@ -2508,6 +2610,78 @@
     function getImagePreviewId(prefix) {
       if (prefix === 'edit') return 'editImagesPreview';
       return prefix + 'ImagesPreview';
+    }
+
+    const SCHEDULE_ROW_HEIGHT_PX = 80;
+
+    function getScheduleTimesArray() {
+      if (scheduleTimes && scheduleTimes.length) return scheduleTimes;
+      var times = [];
+      for (var h = 8; h <= 20; h++) {
+        times.push(String(h).padStart(2, '0') + ':00');
+        if (h < 20) times.push(String(h).padStart(2, '0') + ':30');
+      }
+      return times;
+    }
+
+    function sortAppointmentTimes(times) {
+      if (!times || !times.length) return [];
+      var order = getScheduleTimesArray();
+      return times.slice().sort(function(a, b) {
+        var ia = order.indexOf(a);
+        var ib = order.indexOf(b);
+        if (ia === -1 && ib === -1) return String(a).localeCompare(String(b));
+        if (ia === -1) return 1;
+        if (ib === -1) return -1;
+        return ia - ib;
+      });
+    }
+
+    function getAppointmentTimes(appt) {
+      if (!appt) return [];
+      if (Array.isArray(appt.times) && appt.times.length) {
+        return sortAppointmentTimes(appt.times.map(String));
+      }
+      if (appt.time) return [String(appt.time).trim()];
+      return [];
+    }
+
+    function formatAppointmentTimeLabel(appt) {
+      var times = getAppointmentTimes(appt);
+      if (!times.length) return '';
+      if (times.length === 1) return times[0];
+      return times[0] + ' – ' + times[times.length - 1];
+    }
+
+    function getTimesRangeFromStart(startTime, count) {
+      var order = getScheduleTimesArray();
+      var idx = order.indexOf(startTime);
+      if (idx === -1 || count < 1) return startTime ? [startTime] : [];
+      return order.slice(idx, idx + count);
+    }
+
+    function isTimeRangeOccupied(dayAppts, doctor, times, excludeId) {
+      var doc = Number(doctor);
+      return times.some(function(t) {
+        return dayAppts.some(function(a) {
+          if (excludeId && a.id === excludeId) return false;
+          if (Number(a.doctor) !== doc) return false;
+          return getAppointmentTimes(a).indexOf(t) !== -1;
+        });
+      });
+    }
+
+    function findAppointmentCoveringSlot(dayAppts, time, doctor) {
+      var doc = Number(doctor);
+      var t = String(time).trim();
+      return dayAppts.find(function(a) {
+        return Number(a.doctor) === doc && getAppointmentTimes(a).indexOf(t) !== -1;
+      });
+    }
+
+    function isAppointmentStartSlot(appt, time) {
+      var times = getAppointmentTimes(appt);
+      return times.length && times[0] === String(time).trim();
     }
 
     function getAppointmentServices(appt) {
@@ -2899,6 +3073,24 @@
       return modal === 'edit' ? 'editServiceBlocks' : 'patientServiceBlocks';
     }
 
+    function getPaymentSectionId(modal) {
+      return modal === 'edit' ? 'editPaymentSection' : 'patientPaymentSection';
+    }
+
+    function repositionPaymentSection(modal) {
+      var paymentEl = document.getElementById(getPaymentSectionId(modal));
+      var container = document.getElementById(getServiceBlocksContainerId(modal));
+      if (!paymentEl || !container) return;
+      var blocks = container.querySelectorAll('.service-block');
+      if (!blocks.length) return;
+      var lastBlock = blocks[blocks.length - 1];
+      var priceInput = lastBlock.querySelector('.service-price-input');
+      var priceField = priceInput ? priceInput.closest('.modal-field') : null;
+      if (priceField) {
+        priceField.insertAdjacentElement('afterend', paymentEl);
+      }
+    }
+
     function getDentalChartId(prefix) {
       if (prefix === 'patient') return 'patientDentalChart';
       if (prefix === 'edit') return 'editDentalChart';
@@ -3006,6 +3198,7 @@
       document.querySelectorAll('#' + containerId + ' .service-block').forEach(function(el, idx) {
         el.querySelector('.service-block-title').textContent = 'Услуга ' + (idx + 1);
       });
+      repositionPaymentSection(modal);
     }
 
     function resetServiceBlocks(modal) {
@@ -3027,6 +3220,7 @@
       } else {
         nextPatientServiceBlockId = 1;
       }
+      repositionPaymentSection(modal);
     }
 
     function resetPatientServiceBlocks() {
@@ -3543,7 +3737,7 @@
         });
         item.innerHTML = '<div class="patient"><svg class="status-icon" viewBox="0 0 24 24" fill="currentColor" style="color:#10b981;"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg> Пациент: ' + (a.name || '') + '</div>' +
           '<div class="doctor">Врач: ' + (DOCTORS[a.doctor] ? DOCTORS[a.doctor].name : '') + '</div>' +
-          '<div class="time">' + a.time + '</div>';
+          '<div class="time">' + formatAppointmentTimeLabel(a) + '</div>';
         item.appendChild(editIcon);
         list.appendChild(item);
       });
@@ -3760,20 +3954,22 @@
         for (let doc = 0; doc < DOCTORS.length; doc++) {
           const cell = document.createElement('td');
           cell.style.position = 'relative';
-          cell.style.height = '80px';
+          cell.style.height = SCHEDULE_ROW_HEIGHT_PX + 'px';
           
-          // Find appointment - check both exact match and with type conversion
-          const appt = dayAppts.find(a => {
-            const timeMatch = String(a.time || '').trim() === String(time).trim();
-            const doctorMatch = Number(a.doctor) === Number(doc);
-            return timeMatch && doctorMatch;
-          });
-          if (appt) {
+          const appt = findAppointmentCoveringSlot(dayAppts, time, doc);
+          if (appt && isAppointmentStartSlot(appt, time)) {
+            const slotCount = getAppointmentTimes(appt).length;
             const block = document.createElement('div');
             // Set color based on payment status: green if paid, yellow if not paid
-            block.className = appt.paid ? 'appointment-block light-green' : 'appointment-block yellow';
+            block.className = (appt.paid ? 'appointment-block light-green' : 'appointment-block yellow') +
+              (slotCount > 1 ? ' spanning' : '');
             block.style.top = '4px';
-            block.style.bottom = '4px';
+            if (slotCount > 1) {
+              block.style.height = (slotCount * SCHEDULE_ROW_HEIGHT_PX - 8) + 'px';
+              block.style.bottom = 'auto';
+            } else {
+              block.style.bottom = '4px';
+            }
             block.style.whiteSpace = 'normal';
             const iconSvg = '<svg class="appointment-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>';
             // Add paid indicator if payment is made
@@ -3812,6 +4008,10 @@
             });
             
             cell.appendChild(block);
+          } else if (appt) {
+            cell.className = 'occupied-cell';
+            cell.dataset.time = time;
+            cell.dataset.doctor = doc;
           } else {
             cell.className = 'empty-cell';
             cell.dataset.time = time;
@@ -3839,19 +4039,19 @@
                 const newTime = this.dataset.time;
                 const newDoctor = parseInt(this.dataset.doctor, 10);
                 
-                // Check if target cell already has an appointment
-                const existingAppt = dayAppts.find(a => {
-                  return a.time === newTime && a.doctor === newDoctor;
-                });
-                
-                if (existingAppt) {
+                const moved = appointments.find(function(a) { return a.id === appointmentId; });
+                if (!moved) throw new Error('Appointment not found');
+                var slotCount = getAppointmentTimes(moved).length;
+                var newTimes = getTimesRangeFromStart(newTime, slotCount);
+                if (newTimes.length < slotCount) {
+                  alert('Недостаточно свободных слотов до конца дня');
+                  return;
+                }
+                if (isTimeRangeOccupied(dayAppts, newDoctor, newTimes, appointmentId)) {
                   alert('Это время уже занято');
                   return;
                 }
                 
-                // Update appointment
-                const moved = appointments.find(function(a) { return a.id === appointmentId; });
-                if (!moved) throw new Error('Appointment not found');
                 await updateAppointment(appointmentId, {
                   name: moved.name,
                   phone: moved.phone,
@@ -3865,7 +4065,8 @@
                   tooth: moved.tooth || '',
                   came: moved.came,
                   date: moved.date,
-                  time: newTime,
+                  time: newTimes[0],
+                  times: newTimes,
                   doctor: newDoctor
                 });
                 
@@ -3892,9 +4093,7 @@
                     const to = Math.max(idx0, idx1);
                     const selectedTimes = [];
                     for (let k = from; k <= to; k++) selectedTimes.push(scheduleTimes[k]);
-                    const occupied = selectedTimes.some(function(t) {
-                      return dayAppts.some(function(a) { return Number(a.doctor) === doc && String(a.time).trim() === t; });
-                    });
+                    const occupied = isTimeRangeOccupied(dayAppts, doc, selectedTimes);
                     if (occupied) {
                       lastClickedCell = { time: time, doctor: doc };
                       openPatientModal([time], doc);
@@ -4102,12 +4301,14 @@
       var container = document.getElementById('patientServiceBlocks');
       var block = createServiceBlock('patient', nextPatientServiceBlockId);
       container.appendChild(block);
+      repositionPaymentSection('patient');
     });
 
     document.getElementById('editAddServiceBtn').addEventListener('click', function() {
       var container = document.getElementById('editServiceBlocks');
       var block = createServiceBlock('edit', nextEditServiceBlockId);
       container.appendChild(block);
+      repositionPaymentSection('edit');
     });
 
     var editServiceBlocksEl = document.getElementById('editServiceBlocks');
@@ -4122,8 +4323,102 @@
 
     setupImageUploadForPrefix('patient');
 
+    var manualRangeStart = null;
+    var manualSelectedTimes = [];
+
+    function fillManualAddDoctorSelect() {
+      var sel = document.getElementById('manualAddDoctor');
+      if (!sel) return;
+      sel.innerHTML = DOCTORS.map(function(d, i) {
+        return '<option value="' + i + '">' + d.name + '</option>';
+      }).join('');
+    }
+
+    function renderManualTimeButtons() {
+      var container = document.getElementById('manualAddTimes');
+      if (!container) return;
+      var doctor = parseInt(document.getElementById('manualAddDoctor').value, 10);
+      var dayAppts = appointments.filter(function(a) { return sameDate(a.date, selectedDate); });
+      var occupied = {};
+      dayAppts.filter(function(a) { return Number(a.doctor) === doctor; }).forEach(function(a) {
+        getAppointmentTimes(a).forEach(function(t) { occupied[t] = true; });
+      });
+      var times = getScheduleTimesArray();
+      container.innerHTML = '';
+      times.forEach(function(time) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'manual-slot-time-btn';
+        if (occupied[time]) btn.classList.add('occupied');
+        if (manualSelectedTimes.indexOf(time) !== -1) btn.classList.add('selected');
+        btn.textContent = time;
+        btn.addEventListener('click', function() {
+          if (occupied[time]) return;
+          if (manualRangeStart === null) {
+            manualRangeStart = time;
+            manualSelectedTimes = [time];
+          } else {
+            var order = getScheduleTimesArray();
+            var i0 = order.indexOf(manualRangeStart);
+            var i1 = order.indexOf(time);
+            if (i0 === -1 || i1 === -1) {
+              manualSelectedTimes = [time];
+            } else {
+              var from = Math.min(i0, i1);
+              var to = Math.max(i0, i1);
+              manualSelectedTimes = order.slice(from, to + 1);
+            }
+            manualRangeStart = null;
+          }
+          renderManualTimeButtons();
+        });
+        container.appendChild(btn);
+      });
+    }
+
+    function openManualAddModal() {
+      if (!selectedDate) return;
+      manualRangeStart = null;
+      manualSelectedTimes = [];
+      fillManualAddDoctorSelect();
+      renderManualTimeButtons();
+      document.getElementById('manualAddModal').classList.add('open');
+    }
+
+    function closeManualAddModal() {
+      document.getElementById('manualAddModal').classList.remove('open');
+      manualRangeStart = null;
+      manualSelectedTimes = [];
+    }
+
+    document.getElementById('manualAddAppointmentBtn').addEventListener('click', openManualAddModal);
+    document.getElementById('manualAddCancel').addEventListener('click', closeManualAddModal);
+    document.getElementById('manualAddModal').addEventListener('click', function(e) {
+      if (e.target === this) closeManualAddModal();
+    });
+    document.getElementById('manualAddDoctor').addEventListener('change', function() {
+      manualRangeStart = null;
+      manualSelectedTimes = [];
+      renderManualTimeButtons();
+    });
+    document.getElementById('manualAddContinue').addEventListener('click', function() {
+      if (!manualSelectedTimes.length) {
+        alert('Выберите время');
+        return;
+      }
+      var doctor = parseInt(document.getElementById('manualAddDoctor').value, 10);
+      var sorted = sortAppointmentTimes(manualSelectedTimes);
+      var dayAppts = appointments.filter(function(a) { return sameDate(a.date, selectedDate); });
+      if (isTimeRangeOccupied(dayAppts, doctor, sorted)) {
+        alert('Выбранное время уже занято');
+        return;
+      }
+      closeManualAddModal();
+      openPatientModal(sorted, doctor);
+    });
+
     function openPatientModal(timesArray, doctor) {
-      modalTimes = Array.isArray(timesArray) ? timesArray : [timesArray];
+      modalTimes = sortAppointmentTimes(Array.isArray(timesArray) ? timesArray : [timesArray]);
       modalTime = modalTimes[0] || '';
       modalDoctor = doctor;
       var timeLabel = modalTimes.length > 1 ? (modalTimes[0] + ' – ' + modalTimes[modalTimes.length - 1]) : modalTime;
@@ -4313,48 +4608,50 @@
             images: []
           };
         });
-        var createdIds = [];
-        for (var ti = 0; ti < timesToSave.length; ti++) {
-          var created = await createAppointment({
-            name: name,
-            phone: phone,
-            service: servicesPayload.map(function(s) { return s.service; }).filter(Boolean).join('; '),
-            price: servicesPayload.map(function(s) { return s.price; }).filter(Boolean).join(' + '),
-            time: timesToSave[ti],
-            doctor: modalDoctor,
-            date: dateObj,
-            came: false,
-            paid: payment.paid,
-            paymentMethod: payment.paymentMethod,
-            comment: servicesPayload.map(function(s) { return s.comment; }).filter(Boolean).join('\n'),
-            tooth: first.tooth || '',
-            services: servicesPayload,
-            images: []
-          });
-          createdIds.push(created.id);
+        var sortedTimes = sortAppointmentTimes(timesToSave);
+        var dayApptsNow = appointments.filter(function(a) { return sameDate(a.date, dateObj); });
+        if (isTimeRangeOccupied(dayApptsNow, modalDoctor, sortedTimes)) {
+          alert('Выбранное время уже занято');
+          saveBtn.disabled = false;
+          return;
         }
-        if (createdIds.length) {
-          var finalServices = servicesPayload.slice();
-          var allImages = [];
-          for (var si = 0; si < servicesList.length; si++) {
-            var pfx = servicesList[si]._prefix;
-            if (imageState[pfx] && imageState[pfx].pending.length) {
-              var urls = await uploadAppointmentImages(
-                imageState[pfx].pending.map(function(item) { return item.file; }),
-                createdIds[0],
-                dateStr,
-                'service_' + si
-              );
-              finalServices[si].images = urls;
-              allImages = allImages.concat(urls);
-            }
+        var created = await createAppointment({
+          name: name,
+          phone: phone,
+          service: servicesPayload.map(function(s) { return s.service; }).filter(Boolean).join('; '),
+          price: servicesPayload.map(function(s) { return s.price; }).filter(Boolean).join(' + '),
+          time: sortedTimes[0],
+          times: sortedTimes,
+          doctor: modalDoctor,
+          date: dateObj,
+          came: false,
+          paid: payment.paid,
+          paymentMethod: payment.paymentMethod,
+          comment: servicesPayload.map(function(s) { return s.comment; }).filter(Boolean).join('\n'),
+          tooth: first.tooth || '',
+          services: servicesPayload,
+          images: []
+        });
+        var finalServices = servicesPayload.slice();
+        var allImages = [];
+        for (var si = 0; si < servicesList.length; si++) {
+          var pfx = servicesList[si]._prefix;
+          if (imageState[pfx] && imageState[pfx].pending.length) {
+            var urls = await uploadAppointmentImages(
+              imageState[pfx].pending.map(function(item) { return item.file; }),
+              created.id,
+              dateStr,
+              'service_' + si
+            );
+            finalServices[si].images = urls;
+            allImages = allImages.concat(urls);
           }
-          await Promise.all(createdIds.map(function(id) {
-            return db.collection('appointments').doc(id).update({
-              services: finalServices,
-              images: allImages
-            });
-          }));
+        }
+        if (finalServices.length || allImages.length) {
+          await db.collection('appointments').doc(created.id).update({
+            services: finalServices,
+            images: allImages
+          });
         }
         resetPatientServiceBlocks();
         await loadAppointments(dateToStr(selectedDate));
@@ -4408,6 +4705,7 @@
         imageState[prefix].existing = Array.isArray(svcImages) ? svcImages.slice() : [];
         renderImagePreview(prefix);
       }
+      repositionPaymentSection('edit');
       setPaymentField('edit', !!appt.paid, appt.paymentMethod || '');
       document.getElementById('editAppointmentModal').classList.add('open');
     }
@@ -4488,7 +4786,8 @@
           comment: servicesPayload.map(function(s) { return s.comment; }).filter(Boolean).join('\n'),
           tooth: first.tooth || '',
           services: servicesPayload,
-          time: editingAppointment.time,
+          time: getAppointmentTimes(editingAppointment)[0] || editingAppointment.time,
+          times: getAppointmentTimes(editingAppointment),
           doctor: editingAppointment.doctor
         };
         if (d && d.year !== undefined) {
@@ -4580,6 +4879,7 @@
           service: deletedAppointmentData.service,
           price: deletedAppointmentData.price,
           time: deletedAppointmentData.time,
+          times: getAppointmentTimes(deletedAppointmentData),
           doctor: deletedAppointmentData.doctor,
           date: deletedAppointmentData.date,
           came: deletedAppointmentData.came || false,
