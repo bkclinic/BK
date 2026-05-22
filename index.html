@@ -1220,9 +1220,23 @@
     }
 
     .modal-popup-large .modal-field input,
-    .modal-popup-large .modal-field select {
+    .modal-popup-large .modal-field select,
+    .modal-popup-large .modal-field textarea {
       padding: 14px 16px;
       font-size: 15px;
+    }
+
+    .modal-field textarea {
+      min-height: 88px;
+      resize: vertical;
+      font-family: inherit;
+      line-height: 1.5;
+    }
+
+    .modal-field textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.12);
     }
 
     .modal-popup-large .modal-footer {
@@ -1282,6 +1296,95 @@
 
     .payment-change-btn:hover {
       color: var(--primary-hover);
+    }
+
+    .appointment-images-field label {
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .appointment-images-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn-add-image {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border: 1px dashed var(--primary);
+      border-radius: var(--radius-sm);
+      background: var(--primary-light);
+      color: var(--primary-hover);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.2s, border-color 0.2s;
+    }
+
+    .btn-add-image:hover {
+      background: #99f6e4;
+      border-color: var(--primary-hover);
+    }
+
+    .btn-add-image:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .appointment-images-hint {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .appointment-images-preview {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .appointment-image-item {
+      position: relative;
+      width: 112px;
+      height: 112px;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface-3);
+    }
+
+    .appointment-image-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .appointment-image-remove {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 26px;
+      height: 26px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(15, 23, 42, 0.75);
+      color: #fff;
+      font-size: 16px;
+      line-height: 1;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .appointment-image-remove:hover {
+      background: #dc2626;
     }
 
     .modal-field-row {
@@ -1947,6 +2050,7 @@
           <select id="patientServiceMain">
             <option value="">Выберите услугу</option>
             <option value="Лечение кариеса">Лечение кариеса</option>
+            <option value="Лечение пульпита">Лечение пульпита</option>
             <option value="Лечение периодонтита">Лечение периодонтита</option>
             <option value="Хирургическая стоматология">Хирургическая стоматология</option>
             <option value="Ортодонтическая стоматология">Ортодонтическая стоматология</option>
@@ -1962,6 +2066,19 @@
         <div class="modal-field">
           <label>Цена</label>
           <input type="text" id="patientPrice" placeholder="Цена">
+        </div>
+        <div class="modal-field">
+          <label>Комментарий</label>
+          <textarea id="patientComment" placeholder="Комментарий к записи" rows="3"></textarea>
+        </div>
+        <div class="modal-field appointment-images-field">
+          <label>Фото</label>
+          <input type="file" id="patientImageInput" accept="image/*" multiple hidden>
+          <div class="appointment-images-actions">
+            <button type="button" class="btn-add-image" id="patientImageAddBtn">Добавить фото</button>
+            <span class="appointment-images-hint">JPG, PNG — сохраняется в Firebase Storage</span>
+          </div>
+          <div class="appointment-images-preview" id="patientImagesPreview"></div>
         </div>
         <div class="modal-field payment-field">
           <label class="modal-checkbox-label">
@@ -2011,6 +2128,7 @@
           <select id="editServiceMain">
             <option value="">Выберите услугу</option>
             <option value="Лечение кариеса">Лечение кариеса</option>
+            <option value="Лечение пульпита">Лечение пульпита</option>
             <option value="Лечение периодонтита">Лечение периодонтита</option>
             <option value="Хирургическая стоматология">Хирургическая стоматология</option>
             <option value="Ортодонтическая стоматология">Ортодонтическая стоматология</option>
@@ -2026,6 +2144,19 @@
         <div class="modal-field">
           <label>Цена</label>
           <input type="text" id="editPatientPrice" placeholder="Цена">
+        </div>
+        <div class="modal-field">
+          <label>Комментарий</label>
+          <textarea id="editPatientComment" placeholder="Комментарий к записи" rows="3"></textarea>
+        </div>
+        <div class="modal-field appointment-images-field">
+          <label>Фото</label>
+          <input type="file" id="editImageInput" accept="image/*" multiple hidden>
+          <div class="appointment-images-actions">
+            <button type="button" class="btn-add-image" id="editImageAddBtn">Добавить фото</button>
+            <span class="appointment-images-hint">JPG, PNG — сохраняется в Firebase Storage</span>
+          </div>
+          <div class="appointment-images-preview" id="editImagesPreview"></div>
         </div>
         <div class="modal-field payment-field">
           <label class="modal-checkbox-label">
@@ -2070,6 +2201,7 @@
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
   <script src="firebase-config.js"></script>
   <script>
     // Real calendar — current date and navigation
@@ -2103,7 +2235,15 @@
 
     let db = null;
     let auth = null;
+    let storage = null;
     let appInitialized = false;
+
+    const imageState = {
+      patient: { pending: [], existing: [], removed: [] },
+      edit: { pending: [], existing: [], removed: [] }
+    };
+
+    const MAX_IMAGE_SIZE_MB = 10;
 
     function initFirebase() {
       if (!window.FIREBASE_CONFIG || !window.FIREBASE_CONFIG.apiKey || window.FIREBASE_CONFIG.apiKey === 'YOUR_API_KEY') {
@@ -2114,6 +2254,7 @@
       }
       db = firebase.firestore();
       auth = firebase.auth();
+      storage = firebase.storage();
     }
 
     function normalizeDate(d) {
@@ -2149,10 +2290,173 @@
         came: !!data.came,
         paid: !!data.paid,
         paymentMethod: data.paymentMethod || '',
+        comment: data.comment || '',
+        images: Array.isArray(data.images) ? data.images : [],
         updatedAt: firebase.firestore.FieldValue.serverTimestamp()
       };
       return payload;
     }
+
+    function sanitizeFileName(name) {
+      return (name || 'image').replace(/[^\w.\-()]+/g, '_').slice(0, 80);
+    }
+
+    async function uploadAppointmentImages(files, appointmentId, dateStr) {
+      if (!storage || !files || !files.length) return [];
+      const urls = [];
+      for (var i = 0; i < files.length; i++) {
+        var file = files[i];
+        if (!file.type || file.type.indexOf('image/') !== 0) continue;
+        if (file.size > MAX_IMAGE_SIZE_MB * 1024 * 1024) {
+          throw new Error('Файл «' + (file.name || 'image') + '» слишком большой (макс. ' + MAX_IMAGE_SIZE_MB + ' МБ)');
+        }
+        var ext = (file.name.split('.').pop() || 'jpg').toLowerCase().replace(/[^a-z0-9]/g, '') || 'jpg';
+        var path = 'appointments/' + dateStr + '/' + appointmentId + '/' + Date.now() + '_' + i + '_' + sanitizeFileName(file.name);
+        var ref = storage.ref(path);
+        await ref.put(file);
+        var url = await ref.getDownloadURL();
+        urls.push(url);
+      }
+      return urls;
+    }
+
+    async function deleteStorageImageByUrl(url) {
+      if (!storage || !url) return;
+      try {
+        var ref = storage.refFromURL(url);
+        await ref.delete();
+      } catch (err) {
+        console.warn('Failed to delete storage file:', err);
+      }
+    }
+
+    async function deleteStorageImages(urls) {
+      if (!urls || !urls.length) return;
+      for (var i = 0; i < urls.length; i++) {
+        await deleteStorageImageByUrl(urls[i]);
+      }
+    }
+
+    function getImageInputId(prefix) {
+      return prefix === 'patient' ? 'patientImageInput' : 'editImageInput';
+    }
+
+    function getImagePreviewId(prefix) {
+      return prefix === 'patient' ? 'patientImagesPreview' : 'editImagesPreview';
+    }
+
+    function resetImageField(prefix) {
+      var state = imageState[prefix];
+      if (!state) return;
+      state.pending.forEach(function(item) {
+        if (item.previewUrl) URL.revokeObjectURL(item.previewUrl);
+      });
+      state.pending = [];
+      state.existing = [];
+      state.removed = [];
+      var input = document.getElementById(getImageInputId(prefix));
+      if (input) input.value = '';
+      renderImagePreview(prefix);
+    }
+
+    function renderImagePreview(prefix) {
+      var container = document.getElementById(getImagePreviewId(prefix));
+      var state = imageState[prefix];
+      if (!container || !state) return;
+      container.innerHTML = '';
+
+      state.existing.forEach(function(url) {
+        if (state.removed.indexOf(url) !== -1) return;
+        var item = document.createElement('div');
+        item.className = 'appointment-image-item';
+        item.innerHTML = '<img src="' + url + '" alt="Фото">' +
+          '<button type="button" class="appointment-image-remove" data-url="' + encodeURIComponent(url) + '" title="Удалить">&times;</button>';
+        container.appendChild(item);
+      });
+
+      state.pending.forEach(function(item, index) {
+        var wrap = document.createElement('div');
+        wrap.className = 'appointment-image-item';
+        wrap.innerHTML = '<img src="' + item.previewUrl + '" alt="Новое фото">' +
+          '<button type="button" class="appointment-image-remove" data-pending-index="' + index + '" title="Удалить">&times;</button>';
+        container.appendChild(wrap);
+      });
+
+      container.querySelectorAll('.appointment-image-remove').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          if (btn.dataset.pendingIndex != null) {
+            removePendingImage(prefix, parseInt(btn.dataset.pendingIndex, 10));
+          } else if (btn.dataset.url) {
+            removeExistingImage(prefix, decodeURIComponent(btn.dataset.url));
+          }
+        });
+      });
+    }
+
+    function addPendingImages(prefix, fileList) {
+      var state = imageState[prefix];
+      if (!state || !fileList) return;
+      Array.prototype.forEach.call(fileList, function(file) {
+        if (!file.type || file.type.indexOf('image/') !== 0) return;
+        state.pending.push({
+          file: file,
+          previewUrl: URL.createObjectURL(file)
+        });
+      });
+      renderImagePreview(prefix);
+    }
+
+    function removePendingImage(prefix, index) {
+      var state = imageState[prefix];
+      if (!state || !state.pending[index]) return;
+      URL.revokeObjectURL(state.pending[index].previewUrl);
+      state.pending.splice(index, 1);
+      renderImagePreview(prefix);
+    }
+
+    function removeExistingImage(prefix, url) {
+      var state = imageState[prefix];
+      if (!state || state.removed.indexOf(url) !== -1) return;
+      state.removed.push(url);
+      renderImagePreview(prefix);
+    }
+
+    async function resolveAppointmentImages(prefix, appointmentId, dateStr) {
+      var state = imageState[prefix];
+      var urls = (state.existing || []).filter(function(u) {
+        return state.removed.indexOf(u) === -1;
+      });
+      for (var r = 0; r < state.removed.length; r++) {
+        await deleteStorageImageByUrl(state.removed[r]);
+      }
+      if (state.pending.length) {
+        var files = state.pending.map(function(p) { return p.file; });
+        var uploaded = await uploadAppointmentImages(files, appointmentId, dateStr);
+        urls = urls.concat(uploaded);
+      }
+      return urls;
+    }
+
+    function setupImageUpload(prefix) {
+      var addBtnId = prefix === 'patient' ? 'patientImageAddBtn' : 'editImageAddBtn';
+      var addBtn = document.getElementById(addBtnId);
+      var input = document.getElementById(getImageInputId(prefix));
+      if (!addBtn || !input) return;
+
+      addBtn.addEventListener('click', function() {
+        input.click();
+      });
+
+      input.addEventListener('change', function() {
+        if (input.files && input.files.length) {
+          addPendingImages(prefix, input.files);
+          input.value = '';
+        }
+      });
+    }
+
+    setupImageUpload('patient');
+    setupImageUpload('edit');
 
     async function createAppointment(data) {
       const payload = buildAppointmentData(data);
@@ -2675,6 +2979,11 @@
             '<div class="doctor">Врач: ' + docName + '</div>' +
             '<div class="service">Услуга: ' + (a.service || '—') + '</div>' +
             (a.price ? '<div style="margin-top:4px;color:var(--text-muted);">Цена: ' + a.price + '</div>' : '') +
+            (a.comment ? '<div class="comment" style="margin-top:4px;color:var(--text-muted);">Комментарий: ' + a.comment + '</div>' : '') +
+            (Array.isArray(a.images) && a.images.length ? '<div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:6px;">' +
+              a.images.map(function(url) {
+                return '<a href="' + url + '" target="_blank" rel="noopener"><img src="' + url + '" alt="Фото" style="width:56px;height:56px;object-fit:cover;border-radius:6px;border:1px solid var(--border);"></a>';
+              }).join('') + '</div>' : '') +
             '</div>';
         });
       }
@@ -3055,6 +3364,8 @@
                   price: moved.price,
                   paid: moved.paid,
                   paymentMethod: moved.paymentMethod || '',
+                  comment: moved.comment || '',
+                  images: Array.isArray(moved.images) ? moved.images : [],
                   came: moved.came,
                   date: moved.date,
                   time: newTime,
@@ -3130,6 +3441,10 @@
       'Лечение кариеса': {
         subLabel: 'Тип кариеса',
         subtypes: ['Поверхностный', 'Средний', 'Глубокий']
+      },
+      'Лечение пульпита': {
+        subLabel: 'Тип каналов',
+        subtypes: ['Одноканальный', 'Двухканальный', 'Многоканальный']
       },
       'Лечение периодонтита': {
         subLabel: 'Тип каналов',
@@ -3286,7 +3601,9 @@
       document.getElementById('patientPhone').value = '';
       resetServiceFields('patient');
       document.getElementById('patientPrice').value = '';
+      document.getElementById('patientComment').value = '';
       clearPaymentField('patient');
+      resetImageField('patient');
       updatePatientPaidCheckboxState();
       document.getElementById('patientModal').classList.add('open');
     }
@@ -3412,21 +3729,41 @@
       return { paid: paid, paymentMethod: paid ? method : '' };
     }
 
+    function isPaymentComplete(prefix) {
+      var select = document.getElementById(prefix + 'PaymentMethod');
+      return !!(select && select.value.trim());
+    }
+
+    function handlePaymentCheckboxClick(prefix) {
+      var checkbox = document.getElementById(prefix + 'Paid');
+      if (!checkbox || checkbox.disabled) return;
+      if (isPaymentComplete(prefix)) {
+        clearPaymentField(prefix);
+      } else {
+        checkbox.checked = false;
+        showPaymentPicker(prefix);
+      }
+    }
+
     function setupPaymentField(prefix) {
       var checkbox = document.getElementById(prefix + 'Paid');
       var select = document.getElementById(prefix + 'PaymentMethod');
       var changeBtn = document.getElementById(prefix + 'PaymentChange');
+      var label = checkbox ? checkbox.closest('.modal-checkbox-label') : null;
       if (!checkbox || !select) return;
 
       checkbox.addEventListener('click', function(e) {
         e.preventDefault();
-        if (checkbox.disabled) return;
-        if (checkbox.checked) {
-          clearPaymentField(prefix);
-        } else {
-          showPaymentPicker(prefix);
-        }
+        handlePaymentCheckboxClick(prefix);
       });
+
+      if (label) {
+        label.addEventListener('click', function(e) {
+          if (e.target === checkbox) return;
+          e.preventDefault();
+          handlePaymentCheckboxClick(prefix);
+        });
+      }
 
       select.addEventListener('change', function() {
         if (this.value) {
@@ -3461,6 +3798,7 @@
       const phone = document.getElementById('patientPhone').value.trim();
       const service = getServiceValue('patient');
       const price = document.getElementById('patientPrice').value.trim();
+      const comment = document.getElementById('patientComment').value.trim();
       
       // Validation: имя и номер обязательны
       if (!name) {
@@ -3478,28 +3816,49 @@
       hidePhoneError();
       var timesToSave = modalTimes && modalTimes.length > 0 ? modalTimes : [modalTime];
       var payment = getPaymentData('patient');
+      var saveBtn = document.getElementById('patientModalSave');
+      saveBtn.disabled = true;
       try {
+        var dateObj = { year: selectedDate.year, month: selectedDate.month, date: selectedDate.date };
+        var dateStr = dateToStr(dateObj);
+        var createdIds = [];
         for (var ti = 0; ti < timesToSave.length; ti++) {
-          await createAppointment({
+          var created = await createAppointment({
             name: name,
             phone: phone,
             service: service,
             price: price,
             time: timesToSave[ti],
             doctor: modalDoctor,
-            date: { year: selectedDate.year, month: selectedDate.month, date: selectedDate.date },
+            date: dateObj,
             came: false,
             paid: payment.paid,
-            paymentMethod: payment.paymentMethod
+            paymentMethod: payment.paymentMethod,
+            comment: comment,
+            images: []
           });
+          createdIds.push(created.id);
         }
+        if (imageState.patient.pending.length && createdIds.length) {
+          var imageUrls = await uploadAppointmentImages(
+            imageState.patient.pending.map(function(p) { return p.file; }),
+            createdIds[0],
+            dateStr
+          );
+          await Promise.all(createdIds.map(function(id) {
+            return db.collection('appointments').doc(id).update({ images: imageUrls });
+          }));
+        }
+        resetImageField('patient');
         await loadAppointments(dateToStr(selectedDate));
         await generateSchedule();
         updateAppointmentsList();
         closePatientModal();
       } catch (err) {
         console.error('Failed to create appointment:', err);
-        alert('Ошибка при создании записи');
+        alert(err.message || 'Ошибка при создании записи');
+      } finally {
+        saveBtn.disabled = false;
       }
     });
 
@@ -3533,7 +3892,12 @@
       document.getElementById('editPatientPhone').value = appt.phone || '';
       setServiceFromString('edit', appt.service || '');
       document.getElementById('editPatientPrice').value = appt.price || '';
+      document.getElementById('editPatientComment').value = appt.comment || '';
       setPaymentField('edit', !!appt.paid, appt.paymentMethod || '');
+      imageState.edit.pending = [];
+      imageState.edit.removed = [];
+      imageState.edit.existing = Array.isArray(appt.images) ? appt.images.slice() : [];
+      renderImagePreview('edit');
       updatePaidCheckboxState();
       document.getElementById('editAppointmentModal').classList.add('open');
     }
@@ -3560,6 +3924,9 @@
         }
         const deletedAppointment = JSON.parse(JSON.stringify(editingAppointment));
         try {
+          if (Array.isArray(deletedAppointment.images) && deletedAppointment.images.length) {
+            await deleteStorageImages(deletedAppointment.images);
+          }
           await deleteAppointment(apptId);
           await loadAppointments(dateToStr(selectedDate));
           closeEditAppointmentModal();
@@ -3597,21 +3964,29 @@
           price: document.getElementById('editPatientPrice').value.trim(),
           paid: editPayment.paid,
           paymentMethod: editPayment.paymentMethod,
+          comment: document.getElementById('editPatientComment').value.trim(),
           time: editingAppointment.time,
           doctor: editingAppointment.doctor
         };
         if (d && d.year !== undefined) {
           updateData.date = { year: d.year, month: d.month, date: d.date };
         }
+        var editSaveBtn = document.getElementById('editAppointmentModalSave');
+        editSaveBtn.disabled = true;
         try {
+          var editDateStr = d && d.year !== undefined ? dateToStr(d) : dateToStr(selectedDate);
+          updateData.images = await resolveAppointmentImages('edit', apptId, editDateStr);
           await updateAppointment(apptId, updateData);
+          resetImageField('edit');
           await loadAppointments(dateToStr(selectedDate));
           await generateSchedule();
           updateAppointmentsList();
           closeEditAppointmentModal();
         } catch (err) {
           console.error('Failed to update appointment:', err);
-          alert('Ошибка при обновлении записи');
+          alert(err.message || 'Ошибка при обновлении записи');
+        } finally {
+          editSaveBtn.disabled = false;
         }
         return;
       }
@@ -3676,7 +4051,9 @@
           date: deletedAppointmentData.date,
           came: deletedAppointmentData.came || false,
           paid: deletedAppointmentData.paid || false,
-          paymentMethod: deletedAppointmentData.paymentMethod || ''
+          paymentMethod: deletedAppointmentData.paymentMethod || '',
+          comment: deletedAppointmentData.comment || '',
+          images: deletedAppointmentData.images || []
         });
         
         hideUndoNotification();
