@@ -1243,59 +1243,50 @@
       padding: 22px 32px;
     }
 
-    .payment-field {
+    .payment-methods-field {
       margin-top: 4px;
     }
 
-    .payment-method-wrap {
-      margin-top: 14px;
-      padding: 16px;
-      background: var(--surface-3);
-      border: 1px solid var(--border);
-      border-radius: var(--radius-sm);
-    }
-
-    .payment-method-wrap label {
-      display: block;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 8px;
-    }
-
-    .payment-method-badge {
-      margin-top: 10px;
-      padding: 10px 14px;
-      background: var(--primary-light);
-      color: var(--primary-hover);
-      border-radius: var(--radius-sm);
-      font-size: 14px;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-    }
-
-    .payment-method-badge[hidden] {
-      display: none !important;
-    }
-
-    .payment-change-btn {
-      background: none;
-      border: none;
-      color: var(--primary);
-      font-size: 13px;
+    .payment-status-label {
+      font-size: 15px;
       font-weight: 600;
-      cursor: pointer;
-      font-family: inherit;
-      text-decoration: underline;
-      padding: 0;
-      flex-shrink: 0;
+      margin-bottom: 12px;
+      color: var(--text-muted);
     }
 
-    .payment-change-btn:hover {
-      color: var(--primary-hover);
+    .payment-status-label.is-paid {
+      color: var(--primary);
+    }
+
+    .payment-methods-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .payment-option-btn {
+      padding: 10px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      text-align: center;
+    }
+
+    .payment-option-btn:hover:not(.selected) {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+
+    .payment-option-btn.selected {
+      background: var(--primary);
+      border-color: var(--primary-hover);
+      color: #fff;
     }
 
     .appointment-images-field label {
@@ -2169,6 +2160,10 @@
           <label>Цена</label>
           <input type="text" id="patientPrice" placeholder="Цена">
         </div>
+        <div class="modal-field payment-methods-field">
+          <div class="payment-status-label" id="patientPaymentStatus">Ақша төленбеді</div>
+          <div class="payment-methods-grid" id="patientPaymentMethods"></div>
+        </div>
         <div class="modal-field">
           <label>Комментарий</label>
           <textarea id="patientComment" placeholder="Комментарий к записи" rows="3"></textarea>
@@ -2181,28 +2176,6 @@
             <span class="appointment-images-hint">JPG, PNG — сохраняется в Firebase Storage</span>
           </div>
           <div class="appointment-images-preview" id="patientImagesPreview"></div>
-        </div>
-        <div class="modal-field payment-field">
-          <label class="modal-checkbox-label">
-            <input type="checkbox" id="patientPaid">
-            <span>Оплата произведена</span>
-          </label>
-          <div class="payment-method-badge" id="patientPaymentBadge" hidden>
-            <span id="patientPaymentBadgeText"></span>
-            <button type="button" class="payment-change-btn" id="patientPaymentChange">Изменить</button>
-          </div>
-          <div class="payment-method-wrap" id="patientPaymentMethodWrap" hidden>
-            <label for="patientPaymentMethod">Способ оплаты</label>
-            <select id="patientPaymentMethod">
-              <option value="">Выберите способ оплаты</option>
-              <option value="Kaspi Gold">Kaspi Gold</option>
-              <option value="Kaspi Red">Kaspi Red</option>
-              <option value="Kaspi QR">Kaspi QR</option>
-              <option value="Kaspi (рассрочка)">Kaspi (рассрочка)</option>
-              <option value="Halyk Bank">Halyk Bank</option>
-              <option value="Наличный">Наличный</option>
-            </select>
-          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -2252,6 +2225,10 @@
           <label>Цена</label>
           <input type="text" id="editPatientPrice" placeholder="Цена">
         </div>
+        <div class="modal-field payment-methods-field">
+          <div class="payment-status-label" id="editPaymentStatus">Ақша төленбеді</div>
+          <div class="payment-methods-grid" id="editPaymentMethods"></div>
+        </div>
         <div class="modal-field">
           <label>Комментарий</label>
           <textarea id="editPatientComment" placeholder="Комментарий к записи" rows="3"></textarea>
@@ -2264,28 +2241,6 @@
             <span class="appointment-images-hint">JPG, PNG — сохраняется в Firebase Storage</span>
           </div>
           <div class="appointment-images-preview" id="editImagesPreview"></div>
-        </div>
-        <div class="modal-field payment-field">
-          <label class="modal-checkbox-label">
-            <input type="checkbox" id="editPaid">
-            <span>Оплата произведена</span>
-          </label>
-          <div class="payment-method-badge" id="editPaymentBadge" hidden>
-            <span id="editPaymentBadgeText"></span>
-            <button type="button" class="payment-change-btn" id="editPaymentChange">Изменить</button>
-          </div>
-          <div class="payment-method-wrap" id="editPaymentMethodWrap" hidden>
-            <label for="editPaymentMethod">Способ оплаты</label>
-            <select id="editPaymentMethod">
-              <option value="">Выберите способ оплаты</option>
-              <option value="Kaspi Gold">Kaspi Gold</option>
-              <option value="Kaspi Red">Kaspi Red</option>
-              <option value="Kaspi QR">Kaspi QR</option>
-              <option value="Kaspi (рассрочка)">Kaspi (рассрочка)</option>
-              <option value="Halyk Bank">Halyk Bank</option>
-              <option value="Наличный">Наличный</option>
-            </select>
-          </div>
         </div>
       </div>
       <div class="modal-footer modal-footer-edit">
@@ -3795,7 +3750,6 @@
       clearPaymentField('patient');
       resetImageField('patient');
       setToothSelection('patient', '');
-      updatePatientPaidCheckboxState();
       document.getElementById('patientModal').classList.add('open');
     }
 
@@ -3858,131 +3812,89 @@
 
     const PAYMENT_METHODS = [
       'Kaspi Gold',
+      'Наличный',
       'Kaspi Red',
       'Kaspi QR',
       'Kaspi (рассрочка)',
-      'Halyk Bank',
-      'Наличный'
+      'Halyk Bank'
     ];
 
+    const paymentSelection = { patient: '', edit: '' };
+
+    function getPaymentMethodsContainerId(prefix) {
+      return prefix === 'patient' ? 'patientPaymentMethods' : 'editPaymentMethods';
+    }
+
+    function getPaymentStatusId(prefix) {
+      return prefix === 'patient' ? 'patientPaymentStatus' : 'editPaymentStatus';
+    }
+
+    function updatePaymentStatusUI(prefix) {
+      var statusEl = document.getElementById(getPaymentStatusId(prefix));
+      var method = paymentSelection[prefix] || '';
+      if (!statusEl) return;
+      if (method) {
+        statusEl.textContent = 'Оплата произведена';
+        statusEl.classList.add('is-paid');
+      } else {
+        statusEl.textContent = 'Ақша төленбеді';
+        statusEl.classList.remove('is-paid');
+      }
+      var container = document.getElementById(getPaymentMethodsContainerId(prefix));
+      if (container) {
+        container.querySelectorAll('.payment-option-btn').forEach(function(btn) {
+          btn.classList.toggle('selected', btn.dataset.method === method);
+        });
+      }
+    }
+
+    function setPaymentSelection(prefix, method) {
+      if (method && PAYMENT_METHODS.indexOf(method) === -1) method = '';
+      paymentSelection[prefix] = method || '';
+      updatePaymentStatusUI(prefix);
+    }
+
     function clearPaymentField(prefix) {
-      var checkbox = document.getElementById(prefix + 'Paid');
-      var select = document.getElementById(prefix + 'PaymentMethod');
-      var wrap = document.getElementById(prefix + 'PaymentMethodWrap');
-      var badge = document.getElementById(prefix + 'PaymentBadge');
-      if (checkbox) checkbox.checked = false;
-      if (select) select.value = '';
-      if (wrap) wrap.hidden = true;
-      if (badge) badge.hidden = true;
-    }
-
-    function showPaymentPicker(prefix) {
-      var wrap = document.getElementById(prefix + 'PaymentMethodWrap');
-      var select = document.getElementById(prefix + 'PaymentMethod');
-      var badge = document.getElementById(prefix + 'PaymentBadge');
-      if (wrap) wrap.hidden = false;
-      if (badge) badge.hidden = true;
-      if (select) select.focus();
-    }
-
-    function applyPaymentMethod(prefix, method) {
-      var checkbox = document.getElementById(prefix + 'Paid');
-      var select = document.getElementById(prefix + 'PaymentMethod');
-      var wrap = document.getElementById(prefix + 'PaymentMethodWrap');
-      var badge = document.getElementById(prefix + 'PaymentBadge');
-      var badgeText = document.getElementById(prefix + 'PaymentBadgeText');
-      if (!method || PAYMENT_METHODS.indexOf(method) === -1) {
-        clearPaymentField(prefix);
-        return;
-      }
-      if (select) select.value = method;
-      if (checkbox) checkbox.checked = true;
-      if (wrap) wrap.hidden = true;
-      if (badge && badgeText) {
-        badgeText.textContent = 'Способ оплаты: ' + method;
-        badge.hidden = false;
-      }
+      setPaymentSelection(prefix, '');
     }
 
     function setPaymentField(prefix, paid, paymentMethod) {
       if (paid && paymentMethod) {
-        applyPaymentMethod(prefix, paymentMethod);
+        setPaymentSelection(prefix, paymentMethod);
       } else {
         clearPaymentField(prefix);
       }
     }
 
     function getPaymentData(prefix) {
-      var checkbox = document.getElementById(prefix + 'Paid');
-      var select = document.getElementById(prefix + 'PaymentMethod');
-      var method = select ? select.value.trim() : '';
-      var paid = !!(checkbox && checkbox.checked && method);
-      return { paid: paid, paymentMethod: paid ? method : '' };
+      var method = paymentSelection[prefix] || '';
+      return { paid: !!method, paymentMethod: method };
     }
 
-    function isPaymentComplete(prefix) {
-      var select = document.getElementById(prefix + 'PaymentMethod');
-      return !!(select && select.value.trim());
-    }
-
-    function handlePaymentCheckboxClick(prefix) {
-      var checkbox = document.getElementById(prefix + 'Paid');
-      if (!checkbox || checkbox.disabled) return;
-      if (isPaymentComplete(prefix)) {
-        clearPaymentField(prefix);
-      } else {
-        checkbox.checked = false;
-        showPaymentPicker(prefix);
-      }
-    }
-
-    function setupPaymentField(prefix) {
-      var checkbox = document.getElementById(prefix + 'Paid');
-      var select = document.getElementById(prefix + 'PaymentMethod');
-      var changeBtn = document.getElementById(prefix + 'PaymentChange');
-      var label = checkbox ? checkbox.closest('.modal-checkbox-label') : null;
-      if (!checkbox || !select) return;
-
-      checkbox.addEventListener('click', function(e) {
-        e.preventDefault();
-        handlePaymentCheckboxClick(prefix);
-      });
-
-      if (label) {
-        label.addEventListener('click', function(e) {
-          if (e.target === checkbox) return;
-          e.preventDefault();
-          handlePaymentCheckboxClick(prefix);
+    function buildPaymentMethodsUI(containerId, prefix) {
+      var container = document.getElementById(containerId);
+      if (!container || container.dataset.built) return;
+      container.dataset.built = '1';
+      container.innerHTML = '';
+      PAYMENT_METHODS.forEach(function(method) {
+        var btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'payment-option-btn';
+        btn.dataset.method = method;
+        btn.textContent = method;
+        btn.addEventListener('click', function() {
+          if (paymentSelection[prefix] === method) {
+            setPaymentSelection(prefix, '');
+          } else {
+            setPaymentSelection(prefix, method);
+          }
         });
-      }
-
-      select.addEventListener('change', function() {
-        if (this.value) {
-          applyPaymentMethod(prefix, this.value);
-        }
+        container.appendChild(btn);
       });
-
-      if (changeBtn) {
-        changeBtn.addEventListener('click', function(e) {
-          e.preventDefault();
-          if (checkbox.disabled) return;
-          checkbox.checked = false;
-          showPaymentPicker(prefix);
-        });
-      }
     }
 
-    setupPaymentField('patient');
-    setupPaymentField('edit');
-
-    function updatePatientPaidCheckboxState() {
-      const priceInput = document.getElementById('patientPrice');
-      const paidCheckbox = document.getElementById('patientPaid');
-      const hasPrice = (priceInput.value || '').trim().length > 0;
-      paidCheckbox.disabled = !hasPrice;
-      if (!hasPrice) clearPaymentField('patient');
-    }
-    document.getElementById('patientPrice').addEventListener('input', updatePatientPaidCheckboxState);
+    buildPaymentMethodsUI('patientPaymentMethods', 'patient');
+    buildPaymentMethodsUI('editPaymentMethods', 'edit');
 
     document.getElementById('patientModalSave').addEventListener('click', async function() {
       const name = document.getElementById('patientName').value.trim();
@@ -4065,19 +3977,6 @@
       return times;
     }
 
-    // Update paid checkbox state when price changes
-    document.getElementById('editPatientPrice').addEventListener('input', function() {
-      updatePaidCheckboxState();
-    });
-
-    function updatePaidCheckboxState() {
-      const priceInput = document.getElementById('editPatientPrice');
-      const paidCheckbox = document.getElementById('editPaid');
-      const hasPrice = (priceInput.value || '').trim().length > 0;
-      paidCheckbox.disabled = !hasPrice;
-      if (!hasPrice) clearPaymentField('edit');
-    }
-
     function openEditAppointmentModal(appt) {
       editingAppointment = appt;
       document.getElementById('editPatientName').value = appt.name || '';
@@ -4091,7 +3990,6 @@
       imageState.edit.existing = Array.isArray(appt.images) ? appt.images.slice() : [];
       renderImagePreview('edit');
       setToothSelection('edit', appt.tooth || '');
-      updatePaidCheckboxState();
       document.getElementById('editAppointmentModal').classList.add('open');
     }
 
