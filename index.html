@@ -300,13 +300,17 @@
     }
 
     .reports-calendar-wrap {
-      flex: 0 0 280px;
+      flex: 0 0 300px;
+      width: 300px;
+      max-width: 100%;
+      box-sizing: border-box;
       background: var(--surface);
       border-radius: var(--radius);
       border: 1px solid var(--border);
-      padding: 20px;
+      padding: 16px;
       height: fit-content;
       box-shadow: var(--shadow-sm);
+      overflow: hidden;
     }
 
     .reports-calendar-wrap .calendar-header {
@@ -318,12 +322,28 @@
       font-size: 15px;
     }
 
+    .reports-calendar-wrap .calendar-weekdays,
     .reports-calendar-wrap .calendar-days {
-      min-height: 200px;
+      width: 100%;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 3px;
+    }
+
+    .reports-calendar-wrap .calendar-weekday {
+      padding: 2px 0;
+      min-width: 0;
+      font-size: 10px;
+    }
+
+    .reports-calendar-wrap .calendar-days {
+      min-height: 0;
     }
 
     .reports-calendar-wrap .calendar-day {
       cursor: pointer;
+      min-width: 0;
+      font-size: 12px;
+      aspect-ratio: 1;
     }
 
     .reports-date-label {
@@ -397,145 +417,6 @@
     .report-card-value {
       font-weight: 600;
       color: var(--text);
-    }
-
-    /* Статистика — месячная/годовая диаграмма */
-    .stats-section {
-      margin-top: 24px;
-      background: var(--surface);
-      border-radius: var(--radius);
-      border: 1px solid var(--border);
-      padding: 24px;
-      box-shadow: var(--shadow-sm);
-    }
-    .stats-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-    .stats-title {
-      font-size: 16px;
-      font-weight: 600;
-      color: var(--text);
-    }
-    .stats-toggle {
-      display: flex;
-      background: var(--surface-3);
-      border-radius: var(--radius-sm);
-      padding: 4px;
-    }
-    .stats-toggle-btn {
-      padding: 8px 16px;
-      border: none;
-      background: none;
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--text-muted);
-      cursor: pointer;
-      border-radius: 6px;
-      transition: background 0.2s, color 0.2s;
-    }
-    .stats-toggle-btn:hover {
-      color: var(--text);
-    }
-    .stats-toggle-btn.active {
-      background: var(--surface);
-      color: var(--primary);
-      box-shadow: var(--shadow-sm);
-    }
-    .stats-charts {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
-    .stats-chart {
-      background: var(--surface);
-      border-radius: var(--radius);
-      padding: 20px;
-      border: 1px solid var(--border);
-      box-shadow: var(--shadow-sm);
-    }
-    .stats-chart-title {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-bottom: 16px;
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-    }
-    .stats-chart-area {
-      display: flex;
-      align-items: flex-end;
-      gap: 12px;
-      height: 180px;
-      padding: 0 0 0 44px;
-      position: relative;
-    }
-    .stats-chart-y-axis {
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 32px;
-      width: 36px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      font-size: 11px;
-      color: var(--text-muted);
-      border-right: 1px solid var(--border);
-      padding-right: 8px;
-      text-align: right;
-    }
-    .stats-chart-bars {
-      display: flex;
-      align-items: flex-end;
-      gap: 12px;
-      flex: 1;
-      min-height: 140px;
-      padding-top: 0;
-    }
-    .stats-bar-wrap {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-width: 0;
-      height: 140px;
-    }
-    .stats-bar-spacer {
-      flex: 1;
-      min-height: 0;
-    }
-    .stats-bar {
-      width: 100%;
-      max-width: 48px;
-      margin: 0 auto;
-      min-height: 4px;
-      border-radius: 6px 6px 0 0;
-      transform-origin: bottom;
-      animation: statsBarRise 0.5s ease-out forwards;
-    }
-    @keyframes statsBarRise {
-      from { transform: scaleY(0); opacity: 0; }
-      to { transform: scaleY(1); opacity: 1; }
-    }
-    .stats-bar-patients { background: linear-gradient(180deg, #0d9488 0%, #0f766e 100%); }
-    .stats-bar-label {
-      font-size: 11px;
-      color: var(--text-muted);
-      margin-top: 8px;
-      text-align: center;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      max-width: 100%;
-    }
-    .stats-bar-value {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text);
-      margin-top: 2px;
     }
 
     /* Пациенты — список и профиль */
@@ -2234,24 +2115,6 @@
           <div class="reports-list" id="reportsList"></div>
         </div>
       </div>
-      <div class="stats-section">
-        <div class="stats-header">
-          <span class="stats-title">Месячная статистика</span>
-          <div class="stats-toggle">
-            <button type="button" class="stats-toggle-btn active" id="statsToggleMonthly">Месячная</button>
-            <button type="button" class="stats-toggle-btn" id="statsToggleYearly">Годовая</button>
-          </div>
-        </div>
-        <div class="stats-charts">
-          <div class="stats-chart">
-            <div class="stats-chart-title">Количество пациентов</div>
-            <div class="stats-chart-area">
-              <div class="stats-chart-y-axis" id="statsPatientsYAxis"></div>
-              <div class="stats-chart-bars" id="statsPatientsBars"></div>
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
 
     <!-- Пациенты — список и профиль -->
@@ -2342,7 +2205,7 @@
               <input type="text" class="service-price-input" id="patientPrice" placeholder="Цена">
             </div>
             <div class="modal-field payment-methods-field" id="patientPaymentSection">
-              <div class="payment-status-label" id="patientPaymentStatus">Ақша төленбеді</div>
+              <div class="payment-status-label" id="patientPaymentStatus">Оплата не произведена</div>
               <div class="payment-methods-grid" id="patientPaymentMethods"></div>
             </div>
             <div class="modal-field">
@@ -2417,7 +2280,7 @@
               <input type="text" class="service-price-input" id="editPatientPrice" placeholder="Цена">
             </div>
             <div class="modal-field payment-methods-field" id="editPaymentSection">
-              <div class="payment-status-label" id="editPaymentStatus">Ақша төленбеді</div>
+              <div class="payment-status-label" id="editPaymentStatus">Оплата не произведена</div>
               <div class="payment-methods-grid" id="editPaymentMethods"></div>
             </div>
             <div class="modal-field">
@@ -2993,19 +2856,6 @@
       }
     }
 
-    async function loadAppointmentsInRange(fromDateStr, toDateStr) {
-      try {
-        const snap = await db.collection('appointments')
-          .where('dateStr', '>=', fromDateStr)
-          .where('dateStr', '<=', toDateStr)
-          .get();
-        return snap.docs.map(appointmentFromDoc);
-      } catch (err) {
-        console.error('Failed to load appointments in range:', err);
-        return [];
-      }
-    }
-
     function dateToStr(d) {
       if (!d || typeof d !== 'object') return '';
       return `${d.year}-${String(d.month + 1).padStart(2, '0')}-${String(d.date).padStart(2, '0')}`;
@@ -3077,6 +2927,19 @@
       return modal === 'edit' ? 'editPaymentSection' : 'patientPaymentSection';
     }
 
+    function parkPaymentSection(modal) {
+      var paymentEl = document.getElementById(getPaymentSectionId(modal));
+      var container = document.getElementById(getServiceBlocksContainerId(modal));
+      if (!paymentEl || !container) return;
+      if (!container.contains(paymentEl)) return;
+      var block0 = container.querySelector('.service-block[data-block-id="0"]');
+      if (block0) {
+        block0.appendChild(paymentEl);
+      } else {
+        container.appendChild(paymentEl);
+      }
+    }
+
     function repositionPaymentSection(modal) {
       var paymentEl = document.getElementById(getPaymentSectionId(modal));
       var container = document.getElementById(getServiceBlocksContainerId(modal));
@@ -3089,6 +2952,19 @@
       if (priceField) {
         priceField.insertAdjacentElement('afterend', paymentEl);
       }
+      ensurePaymentMethodsUI(modal === 'edit' ? 'edit' : 'patient');
+      paymentEl.style.display = '';
+    }
+
+    function ensurePaymentMethodsUI(prefix) {
+      var containerId = getPaymentMethodsContainerId(prefix);
+      var container = document.getElementById(containerId);
+      if (!container) return;
+      if (!container.querySelector('.payment-option-btn')) {
+        delete container.dataset.built;
+        buildPaymentMethodsUI(containerId, prefix);
+      }
+      updatePaymentStatusUI(prefix);
     }
 
     function getDentalChartId(prefix) {
@@ -3194,6 +3070,10 @@
         delete imageState[prefix];
       }
       if (toothSelection[prefix] !== undefined) delete toothSelection[prefix];
+      var paymentEl = document.getElementById(getPaymentSectionId(modal));
+      if (paymentEl && block.contains(paymentEl)) {
+        parkPaymentSection(modal);
+      }
       block.remove();
       document.querySelectorAll('#' + containerId + ' .service-block').forEach(function(el, idx) {
         el.querySelector('.service-block-title').textContent = 'Услуга ' + (idx + 1);
@@ -3398,12 +3278,10 @@
     document.getElementById('reportsCalendarPrev').addEventListener('click', function() {
       if (reportViewMonth === 0) { reportViewYear--; reportViewMonth = 11; } else reportViewMonth--;
       generateReportsCalendar();
-      renderStats().catch(err => console.error('Error rendering stats:', err));
     });
     document.getElementById('reportsCalendarNext').addEventListener('click', function() {
       if (reportViewMonth === 11) { reportViewYear++; reportViewMonth = 0; } else reportViewMonth++;
       generateReportsCalendar();
-      renderStats().catch(err => console.error('Error rendering stats:', err));
     });
     document.getElementById('reportsCalendarTodayBtn').addEventListener('click', function() {
       var t = getToday();
@@ -3412,7 +3290,6 @@
       reportSelectedDate = { year: t.year, month: t.month, date: t.date };
       generateReportsCalendar();
       renderReports().catch(err => console.error('Error rendering reports:', err));
-      renderStats().catch(err => console.error('Error rendering stats:', err));
     });
 
     document.getElementById('reportsPrintBtn').addEventListener('click', async function() {
@@ -3463,122 +3340,6 @@
       printWindow.document.close();
       printWindow.focus();
       setTimeout(function() { printWindow.print(); printWindow.close(); }, 250);
-    });
-
-    let statsViewMode = 'monthly';
-
-    function renderStatsBar(container, data, yAxisEl) {
-      container.innerHTML = '';
-      if (!data || data.length === 0) {
-        container.innerHTML = '<div style="color:var(--text-muted);font-size:14px;padding:20px;">Нет данных</div>';
-        if (yAxisEl) yAxisEl.innerHTML = '';
-        return;
-      }
-      const maxVal = Math.max(...data.map(d => d.patients), 1);
-      const chartHeight = 140;
-      const scaleMax = Math.max(Math.ceil(maxVal * 1.2), 1);
-      if (yAxisEl) {
-        const steps = 6;
-        let labels = [];
-        for (var s = 0; s <= steps; s++) {
-          var v = Math.round((scaleMax * s) / steps);
-          labels.push(v);
-        }
-        yAxisEl.innerHTML = labels.reverse().map(function(l) { return '<span>' + l + '</span>'; }).join('');
-      }
-      data.forEach(function(d, i) {
-        const wrap = document.createElement('div');
-        wrap.className = 'stats-bar-wrap';
-        const val = d.patients;
-        const barHeightPx = scaleMax > 0 ? Math.max((val / scaleMax) * chartHeight, val > 0 ? 4 : 0) : 0;
-        const spacer = document.createElement('div');
-        spacer.className = 'stats-bar-spacer';
-        const bar = document.createElement('div');
-        bar.className = 'stats-bar stats-bar-patients';
-        bar.style.height = barHeightPx + 'px';
-        bar.style.animationDelay = (i * 0.06) + 's';
-        const label = document.createElement('div');
-        label.className = 'stats-bar-label';
-        label.textContent = d.label;
-        const valEl = document.createElement('div');
-        valEl.className = 'stats-bar-value';
-        valEl.textContent = d.patients;
-        wrap.appendChild(spacer);
-        wrap.appendChild(bar);
-        wrap.appendChild(label);
-        wrap.appendChild(valEl);
-        container.appendChild(wrap);
-      });
-    }
-
-    async function renderStats() {
-      const patientsBars = document.getElementById('statsPatientsBars');
-      const patientsYAxis = document.getElementById('statsPatientsYAxis');
-      if (!patientsBars || !patientsYAxis) return;
-
-      const y = reportViewYear;
-      const m = reportViewMonth;
-
-      if (statsViewMode === 'monthly') {
-        var toDate = new Date(y, m + 1, 0);
-        var fromStr = dateToStr({ year: y, month: m, date: 1 });
-        var toStr = dateToStr({ year: y, month: m, date: toDate.getDate() });
-        var list = await loadAppointmentsInRange(fromStr, toStr);
-        var paid = list.filter(a => a.paid === true);
-        var daysInMonth = toDate.getDate();
-        var weeks = [];
-        for (var w = 0; w < 4; w++) {
-          var startDay = w * 7 + 1;
-          var endDay = w === 3 ? daysInMonth : Math.min((w + 1) * 7, daysInMonth);
-          var weekPaid = paid.filter(function(a) {
-            var d = a.date;
-            if (!d) return false;
-            var day = typeof d.date === 'number' ? d.date : parseInt(d.date);
-            return day >= startDay && day <= endDay;
-          });
-          weeks.push({
-            label: 'Нед. ' + (w + 1),
-            patients: weekPaid.length
-          });
-        }
-        renderStatsBar(patientsBars, weeks, patientsYAxis);
-      } else {
-        var fromStr = dateToStr({ year: y, month: 0, date: 1 });
-        var toStr = dateToStr({ year: y, month: 11, date: 31 });
-        var list = await loadAppointmentsInRange(fromStr, toStr);
-        var paid = list.filter(a => a.paid === true);
-        var data = [];
-        for (var mo = 0; mo < 12; mo++) {
-          var monthPaid = paid.filter(function(a) {
-            var d = a.date;
-            if (!d) return false;
-            var m = typeof d.month === 'number' ? d.month : parseInt(d.month);
-            return m === mo;
-          });
-          data.push({
-            label: MONTH_NAMES[mo].slice(0, 3),
-            patients: monthPaid.length
-          });
-        }
-        renderStatsBar(patientsBars, data, patientsYAxis);
-      }
-    }
-
-    document.getElementById('statsToggleMonthly').addEventListener('click', function() {
-      if (statsViewMode === 'monthly') return;
-      statsViewMode = 'monthly';
-      document.getElementById('statsToggleMonthly').classList.add('active');
-      document.getElementById('statsToggleYearly').classList.remove('active');
-      document.querySelector('.stats-section .stats-title').textContent = 'Месячная статистика';
-      renderStats().catch(err => console.error('Error rendering stats:', err));
-    });
-    document.getElementById('statsToggleYearly').addEventListener('click', function() {
-      if (statsViewMode === 'yearly') return;
-      statsViewMode = 'yearly';
-      document.getElementById('statsToggleYearly').classList.add('active');
-      document.getElementById('statsToggleMonthly').classList.remove('active');
-      document.querySelector('.stats-section .stats-title').textContent = 'Годовая статистика';
-      renderStats().catch(err => console.error('Error rendering stats:', err));
     });
 
     async function getUniquePatients() {
@@ -3693,7 +3454,6 @@
         reportViewMonth = reportViewMonth != null ? reportViewMonth : reportSelectedDate.month;
         generateReportsCalendar();
         await renderReports();
-        await renderStats();
       } else if (view === 'patients') {
         main.classList.add('view-patients');
         await renderPatientsList();
@@ -4427,6 +4187,8 @@
       document.getElementById('patientPhone').value = '';
       resetPatientServiceBlocks();
       clearPaymentField('patient');
+      repositionPaymentSection('patient');
+      ensurePaymentMethodsUI('patient');
       document.getElementById('patientModal').classList.add('open');
     }
 
@@ -4514,7 +4276,7 @@
         statusEl.textContent = 'Оплата произведена';
         statusEl.classList.add('is-paid');
       } else {
-        statusEl.textContent = 'Ақша төленбеді';
+        statusEl.textContent = 'Оплата не произведена';
         statusEl.classList.remove('is-paid');
       }
       var container = document.getElementById(getPaymentMethodsContainerId(prefix));
@@ -4706,6 +4468,7 @@
         renderImagePreview(prefix);
       }
       repositionPaymentSection('edit');
+      ensurePaymentMethodsUI('edit');
       setPaymentField('edit', !!appt.paid, appt.paymentMethod || '');
       document.getElementById('editAppointmentModal').classList.add('open');
     }
